@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATLASLE — Guess the Country</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4ecd8;
+    --paper-dark: #e8dcc0;
+    --ink: #2b2118;
+    --ink-soft: #5c4f3d;
+    --line: #c4b596;
+    --sea: #b8cdc4;
+    --green: #4e7c43;
+    --green-bg: #d9e5cf;
+    --amber: #b8862f;
+    --amber-bg: #f0e2c4;
+    --red: #a23b2e;
+    --red-bg: #ecd4cf;
+    --shadow: rgba(43, 33, 24, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(196,181,150,0.25) 0, transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(184,205,196,0.3) 0, transparent 45%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    color: var(--ink);
+    font-family: 'Spline Sans Mono', monospace;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .sg-code {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    display: inline-block; min-width: 38px;
+    margin-right: 4px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(44px, 12vw, 88px);
+    letter-spacing: 0.08em;
+    line-height: 0.9;
+    text-shadow: 2px 2px 0 var(--paper-dark);
+  }
+  .tag {
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin-top: 4px;
+  }
+
+  .rule-line {
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 12px, transparent 12px 20px);
+    opacity: 0.4;
+    margin: 18px 0;
+  }
+
+  /* How to play */
+  details.howto {
+    background: rgba(255,255,255,0.35);
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    padding: 0 18px;
+    margin-bottom: 20px;
+  }
+  details.howto summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 14px 0;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  details.howto summary::-webkit-details-marker { display: none; }
+  details.howto summary .chev { transition: transform .25s; font-family:'Fraunces',serif; }
+  details.howto[open] summary .chev { transform: rotate(180deg); }
+  .howto-body { padding-bottom: 18px; font-size: 13.5px; color: var(--ink-soft); }
+  .howto-body h3 {
+    font-family: 'Fraunces', serif; font-weight: 600; color: var(--ink);
+    margin: 14px 0 6px; font-size: 15px;
+  }
+  .clue-key { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+  .clue-key .row { display: flex; gap: 10px; align-items: baseline; }
+  .clue-key .nm { min-width: 92px; font-weight: 600; color: var(--ink); }
+  .legend-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .legend-pills span {
+    padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+    border: 1.5px solid;
+  }
+  .lg-green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+  .lg-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
+  .lg-red   { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+
+  /* Input */
+  .input-zone { position: relative; margin-bottom: 6px; }
+  .input-row { display: flex; gap: 8px; }
+  #guess {
+    flex: 1;
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 17px;
+    padding: 14px 16px;
+    border: 2px solid var(--ink);
+    background: rgba(255,255,255,0.55);
+    color: var(--ink);
+    border-radius: 4px;
+    outline: none;
+  }
+  #guess:focus { background: #fff; box-shadow: 3px 3px 0 var(--shadow); }
+  #guess::placeholder { color: var(--ink-soft); opacity: 0.6; }
+  button.go {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    background: var(--ink); color: var(--paper);
+    border: 2px solid var(--ink); border-radius: 4px;
+    padding: 0 24px; font-size: 16px; cursor: pointer;
+    transition: transform .1s, box-shadow .1s;
+  }
+  button.go:hover { transform: translate(-2px,-2px); box-shadow: 3px 3px 0 var(--shadow); }
+  button.go:active { transform: translate(0,0); box-shadow: none; }
+  button.go:disabled { opacity: 0.4; cursor: not-allowed; transform:none; box-shadow:none; }
+
+  .suggest {
+    position: absolute; top: 100%; left: 0; right: 0; z-index: 20;
+    background: #fff; border: 2px solid var(--ink); border-top: none;
+    max-height: 220px; overflow-y: auto; border-radius: 0 0 4px 4px;
+    box-shadow: 4px 6px 0 var(--shadow);
+  }
+  .suggest div {
+    padding: 9px 16px; cursor: pointer; font-size: 15px;
+    border-bottom: 1px solid var(--line);
+  }
+  .suggest div:last-child { border-bottom: none; }
+  .suggest div:hover, .suggest div.active { background: var(--paper-dark); }
+
+  .meta-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px; color: var(--ink-soft); margin: 10px 2px 18px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .meta-bar button {
+    background: none; border: none; color: var(--ink-soft);
+    text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 12.5px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .meta-bar button:hover { color: var(--red); }
+
+  /* Guess grid */
+  .guesses { display: flex; flex-direction: column; gap: 12px; }
+  .guess-card {
+    border: 1.5px solid var(--line);
+    background: rgba(255,255,255,0.4);
+    border-radius: 5px;
+    padding: 12px 14px 14px;
+    box-shadow: 2px 2px 0 var(--shadow);
+    animation: drop .35s cubic-bezier(.2,.8,.3,1);
+  }
+  @keyframes drop { from { opacity: 0; transform: translateY(-10px); } to { opacity:1; transform:none; } }
+  .guess-name {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .guess-name .flag { font-size: 22px; }
+  .clues { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  @media (max-width: 600px) { .clues { grid-template-columns: repeat(2,1fr); } }
+  .clue {
+    border-radius: 4px; padding: 7px 4px; text-align: center;
+    border: 1.5px solid; min-height: 62px;
+    display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  }
+  .clue .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.75; }
+  .clue .val { font-size: 14px; font-weight: 600; line-height: 1.15; }
+  .clue .sub { font-size: 10px; opacity: 0.8; }
+  .c-green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+  .c-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
+  .c-red   { background: var(--red-bg);   color: var(--red);   border-color: var(--red); }
+
+  /* End banner */
+  .banner {
+    text-align: center; padding: 22px; margin-bottom: 18px;
+    border: 2px solid var(--ink); border-radius: 5px;
+    box-shadow: 4px 4px 0 var(--shadow);
+    animation: drop .4s;
+  }
+  .banner.win { background: var(--green-bg); }
+  .banner.lose { background: var(--red-bg); }
+  .banner h2 { font-family:'Fraunces',serif; font-weight:900; font-size: 30px; margin-bottom: 4px; }
+  .banner p { font-size: 14px; color: var(--ink-soft); }
+  .banner .answer { font-family:'Fraunces',serif; font-style: italic; font-size: 19px; color: var(--ink); margin-top:6px; }
+  .banner .info-toggle {
+    display: block; margin: 12px auto 0;
+    background: none; border: 1.5px solid var(--ink);
+    color: var(--ink); border-radius: 4px; padding: 6px 16px;
+    font-family: 'Spline Sans Mono', monospace; font-size: 12.5px;
+    cursor: pointer; letter-spacing: 0.04em;
+  }
+  .banner .info-toggle:hover { background: rgba(43,33,24,0.07); }
+  .info-panel {
+    margin: 12px auto 0; max-width: 360px;
+    background: rgba(255,255,255,0.45);
+    border: 1.5px solid var(--line); border-radius: 5px;
+    padding: 6px 14px; text-align: left;
+    animation: drop .25s;
+  }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; padding: 6px 0; font-size: 13px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row span { color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px; }
+  .info-row b { font-family: 'Fraunces', serif; font-weight: 600; color: var(--ink); text-align: right; }
+  .banner button.again {
+    margin-top: 14px; font-family:'Fraunces',serif; font-weight:600; font-size: 15px;
+    background: var(--ink); color: var(--paper); border:none; padding: 10px 28px;
+    border-radius: 4px; cursor: pointer;
+  }
+  .banner button.again:hover { opacity: 0.85; }
+
+  .err { color: var(--red); font-size: 13px; min-height: 18px; margin: 4px 2px; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ATLASLE</h1>
+    <div class="tag">guess the country in six tries</div>
+  </header>
+
+  <div class="rule-line"></div>
+
+  <details class="howto" open>
+    <summary>How to play <span class="chev">▾</span></summary>
+    <div class="howto-body">
+      <p>A secret country has been chosen. Type any country and submit. Each guess reveals eight clues comparing your guess to the secret country. Colors tell you how close you are.</p>
+
+      <div class="legend-pills">
+        <span class="lg-green">Green = exact match</span>
+        <span class="lg-amber">Amber = close</span>
+        <span class="lg-red">Red = far off</span>
+      </div>
+
+      <h3>The eight clues</h3>
+      <div class="clue-key">
+        <div class="row"><span class="nm">Continent</span><span>Green if same continent, red if not.</span></div>
+        <div class="row"><span class="nm">Letter</span><span>First letter of the country's official name. Green if it matches.</span></div>
+        <div class="row"><span class="nm">Size</span><span>Land area. Shows how many square miles your guess is off, plus an arrow: ↑ the secret country is bigger, ↓ it's smaller.</span></div>
+        <div class="row"><span class="nm">Population</span><span>Shows how many people off your guess is, with ↑ (secret has more) or ↓ (fewer).</span></div>
+        <div class="row"><span class="nm">Economy</span><span>GDP. Shows how far off in US dollars, with ↑ (secret is richer) or ↓ (poorer).</span></div>
+        <div class="row"><span class="nm">Government</span><span>Type of government (republic, constitutional monarchy, etc.). Green if it's the same.</span></div>
+        <div class="row"><span class="nm">Language</span><span>Most widely spoken language. Green if it's the same.</span></div>
+        <div class="row"><span class="nm">Flag</span><span>Percent of the secret flag's colors that also appear on your guess's flag. Guess USA against China → 50% (both have red).</span></div>
+      </div>
+      <p style="margin-top:12px;font-style:italic;">Tip: the size and economy arrows are your compass — follow them toward bigger/smaller and richer/poorer countries.</p>
+    </div>
+  </details>
+
+  <div id="game-area">
+    <div class="input-zone">
+      <div class="input-row">
+        <input id="guess" type="text" autocomplete="off" placeholder="Type a country…" />
+        <button class="go" id="submit">Guess</button>
+      </div>
+      <div class="suggest" id="suggest" style="display:none;"></div>
+    </div>
+    <div class="err" id="err"></div>
+
+    <div class="meta-bar">
+      <span id="tries">Guess 1 of 6</span>
+      <button id="giveup">Give up</button>
+    </div>
+
+    <div id="banner-slot"></div>
+    <div class="guesses" id="guesses"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- DATA ----------
+   area = thousands of sq miles (we display sq mi)
+   gdp  = nominal GDP in billions USD (approx, for game purposes)
+   colors = set of flag colors (named)
+*/
+const COUNTRIES = [
+  {n:"Afghanistan",code:"AFG",cont:"Asia",area:251.8,gdp:17,lang:"Pashto",pop:41,gov:"Theocracy",flag:"🇦🇫",colors:["black","red","green","white"]},
+  {n:"Algeria",code:"DZA",cont:"Africa",area:919.6,gdp:260,lang:"Arabic",pop:46,gov:"Republic",flag:"🇩🇿",colors:["green","white","red"]},
+  {n:"Argentina",code:"ARG",cont:"South America",area:1073.5,gdp:640,lang:"Spanish",pop:46,gov:"Republic",flag:"🇦🇷",colors:["blue","white","yellow"]},
+  {n:"Australia",code:"AUS",cont:"Oceania",area:2988.9,gdp:1740,lang:"English",pop:27,gov:"Const. monarchy",flag:"🇦🇺",colors:["blue","white","red"]},
+  {n:"Austria",code:"AUT",cont:"Europe",area:32.4,gdp:520,lang:"German",pop:9,gov:"Republic",flag:"🇦🇹",colors:["red","white"]},
+  {n:"Bangladesh",code:"BGD",cont:"Asia",area:55.6,gdp:450,lang:"Bengali",pop:173,gov:"Republic",flag:"🇧🇩",colors:["green","red"]},
+  {n:"Belgium",code:"BEL",cont:"Europe",area:11.8,gdp:640,lang:"Dutch",pop:12,gov:"Const. monarchy",flag:"🇧🇪",colors:["black","yellow","red"]},
+  {n:"Bolivia",code:"BOL",cont:"South America",area:424.2,gdp:45,lang:"Spanish",pop:12,gov:"Republic",flag:"🇧🇴",colors:["red","yellow","green"]},
+  {n:"Brazil",code:"BRA",cont:"South America",area:3287.6,gdp:2170,lang:"Portuguese",pop:216,gov:"Republic",flag:"🇧🇷",colors:["green","yellow","blue","white"]},
+  {n:"Cambodia",code:"KHM",cont:"Asia",area:69.9,gdp:42,lang:"Khmer",pop:17,gov:"Const. monarchy",flag:"🇰🇭",colors:["red","blue","white"]},
+  {n:"Cameroon",code:"CMR",cont:"Africa",area:183.6,gdp:50,lang:"French",pop:28,gov:"Republic",flag:"🇨🇲",colors:["green","red","yellow"]},
+  {n:"Canada",code:"CAN",cont:"North America",area:3855.1,gdp:2140,lang:"English",pop:40,gov:"Const. monarchy",flag:"🇨🇦",colors:["red","white"]},
+  {n:"Chile",code:"CHL",cont:"South America",area:291.9,gdp:335,lang:"Spanish",pop:20,gov:"Republic",flag:"🇨🇱",colors:["red","white","blue"]},
+  {n:"China",code:"CHN",cont:"Asia",area:3705.4,gdp:17790,lang:"Mandarin",pop:1411,gov:"One-party state",flag:"🇨🇳",colors:["red","yellow"]},
+  {n:"Colombia",code:"COL",cont:"South America",area:439.7,gdp:360,lang:"Spanish",pop:52,gov:"Republic",flag:"🇨🇴",colors:["yellow","blue","red"]},
+  {n:"Cuba",code:"CUB",cont:"North America",area:42.8,gdp:107,lang:"Spanish",pop:11,gov:"One-party state",flag:"🇨🇺",colors:["blue","white","red"]},
+  {n:"Denmark",code:"DNK",cont:"Europe",area:16.6,gdp:410,lang:"Danish",pop:6,gov:"Const. monarchy",flag:"🇩🇰",colors:["red","white"]},
+  {n:"Egypt",code:"EGY",cont:"Africa",area:386.7,gdp:380,lang:"Arabic",pop:114,gov:"Republic",flag:"🇪🇬",colors:["red","white","black"]},
+  {n:"Ethiopia",code:"ETH",cont:"Africa",area:426.4,gdp:160,lang:"Amharic",pop:129,gov:"Republic",flag:"🇪🇹",colors:["green","yellow","red","blue"]},
+  {n:"Finland",code:"FIN",cont:"Europe",area:130.6,gdp:300,lang:"Finnish",pop:6,gov:"Republic",flag:"🇫🇮",colors:["blue","white"]},
+  {n:"France",code:"FRA",cont:"Europe",area:248.4,gdp:3030,lang:"French",pop:68,gov:"Republic",flag:"🇫🇷",colors:["blue","white","red"]},
+  {n:"Germany",code:"DEU",cont:"Europe",area:137.8,gdp:4460,lang:"German",pop:84,gov:"Republic",flag:"🇩🇪",colors:["black","red","yellow"]},
+  {n:"Ghana",code:"GHA",cont:"Africa",area:92.1,gdp:76,lang:"English",pop:34,gov:"Republic",flag:"🇬🇭",colors:["red","yellow","green","black"]},
+  {n:"Greece",code:"GRC",cont:"Europe",area:50.9,gdp:240,lang:"Greek",pop:10,gov:"Republic",flag:"🇬🇷",colors:["blue","white"]},
+  {n:"India",code:"IND",cont:"Asia",area:1269.2,gdp:3550,lang:"Hindi",pop:1429,gov:"Republic",flag:"🇮🇳",colors:["orange","white","green","blue"]},
+  {n:"Indonesia",code:"IDN",cont:"Asia",area:735.4,gdp:1370,lang:"Indonesian",pop:279,gov:"Republic",flag:"🇮🇩",colors:["red","white"]},
+  {n:"Iran",code:"IRN",cont:"Asia",area:636.4,gdp:400,lang:"Persian",pop:89,gov:"Theocracy",flag:"🇮🇷",colors:["green","white","red"]},
+  {n:"Iraq",code:"IRQ",cont:"Asia",area:169.2,gdp:250,lang:"Arabic",pop:46,gov:"Republic",flag:"🇮🇶",colors:["red","white","black","green"]},
+  {n:"Ireland",code:"IRL",cont:"Europe",area:27.1,gdp:550,lang:"English",pop:5,gov:"Republic",flag:"🇮🇪",colors:["green","white","orange"]},
+  {n:"Israel",code:"ISR",cont:"Asia",area:8.5,gdp:510,lang:"Hebrew",pop:10,gov:"Republic",flag:"🇮🇱",colors:["blue","white"]},
+  {n:"Italy",code:"ITA",cont:"Europe",area:116.3,gdp:2190,lang:"Italian",pop:59,gov:"Republic",flag:"🇮🇹",colors:["green","white","red"]},
+  {n:"Japan",code:"JPN",cont:"Asia",area:145.9,gdp:4210,lang:"Japanese",pop:124,gov:"Const. monarchy",flag:"🇯🇵",colors:["white","red"]},
+  {n:"Kenya",code:"KEN",cont:"Africa",area:224.1,gdp:110,lang:"Swahili",pop:56,gov:"Republic",flag:"🇰🇪",colors:["black","red","green","white"]},
+  {n:"Mexico",code:"MEX",cont:"North America",area:758.4,gdp:1790,lang:"Spanish",pop:129,gov:"Republic",flag:"🇲🇽",colors:["green","white","red"]},
+  {n:"Mongolia",code:"MNG",cont:"Asia",area:603.9,gdp:20,lang:"Mongolian",pop:3,gov:"Republic",flag:"🇲🇳",colors:["red","blue","yellow"]},
+  {n:"Morocco",code:"MAR",cont:"Africa",area:172.4,gdp:140,lang:"Arabic",pop:38,gov:"Const. monarchy",flag:"🇲🇦",colors:["red","green"]},
+  {n:"Nepal",code:"NPL",cont:"Asia",area:56.8,gdp:41,lang:"Nepali",pop:31,gov:"Republic",flag:"🇳🇵",colors:["red","blue","white"]},
+  {n:"Netherlands",code:"NLD",cont:"Europe",area:16.0,gdp:1120,lang:"Dutch",pop:18,gov:"Const. monarchy",flag:"🇳🇱",colors:["red","white","blue"]},
+  {n:"New Zealand",code:"NZL",cont:"Oceania",area:103.4,gdp:250,lang:"English",pop:5,gov:"Const. monarchy",flag:"🇳🇿",colors:["blue","white","red"]},
+  {n:"Nigeria",code:"NGA",cont:"Africa",area:356.7,gdp:360,lang:"English",pop:227,gov:"Republic",flag:"🇳🇬",colors:["green","white"]},
+  {n:"Norway",code:"NOR",cont:"Europe",area:125.0,gdp:485,lang:"Norwegian",pop:6,gov:"Const. monarchy",flag:"🇳🇴",colors:["red","white","blue"]},
+  {n:"Pakistan",code:"PAK",cont:"Asia",area:307.4,gdp:340,lang:"Urdu",pop:241,gov:"Republic",flag:"🇵🇰",colors:["green","white"]},
+  {n:"Peru",code:"PER",cont:"South America",area:496.2,gdp:270,lang:"Spanish",pop:34,gov:"Republic",flag:"🇵🇪",colors:["red","white"]},
+  {n:"Philippines",code:"PHL",cont:"Asia",area:115.8,gdp:440,lang:"Filipino",pop:117,gov:"Republic",flag:"🇵🇭",colors:["blue","red","white","yellow"]},
+  {n:"Poland",code:"POL",cont:"Europe",area:120.7,gdp:810,lang:"Polish",pop:37,gov:"Republic",flag:"🇵🇱",colors:["white","red"]},
+  {n:"Portugal",code:"PRT",cont:"Europe",area:35.6,gdp:290,lang:"Portuguese",pop:10,gov:"Republic",flag:"🇵🇹",colors:["green","red","white","yellow"]},
+  {n:"Romania",code:"ROU",cont:"Europe",area:92.0,gdp:350,lang:"Romanian",pop:19,gov:"Republic",flag:"🇷🇴",colors:["blue","yellow","red"]},
+  {n:"Russia",code:"RUS",cont:"Europe",area:6601.7,gdp:2020,lang:"Russian",pop:144,gov:"Republic",flag:"🇷🇺",colors:["white","blue","red"]},
+  {n:"Saudi Arabia",code:"SAU",cont:"Asia",area:830.0,gdp:1070,lang:"Arabic",pop:37,gov:"Absolute monarchy",flag:"🇸🇦",colors:["green","white"]},
+  {n:"Singapore",code:"SGP",cont:"Asia",area:0.3,gdp:500,lang:"English",pop:6,gov:"Republic",flag:"🇸🇬",colors:["red","white"]},
+  {n:"South Africa",code:"ZAF",cont:"Africa",area:470.7,gdp:380,lang:"Zulu",pop:61,gov:"Republic",flag:"🇿🇦",colors:["red","white","blue","green","yellow","black"]},
+  {n:"South Korea",code:"KOR",cont:"Asia",area:38.5,gdp:1710,lang:"Korean",pop:52,gov:"Republic",flag:"🇰🇷",colors:["white","red","blue","black"]},
+  {n:"Spain",code:"ESP",cont:"Europe",area:195.1,gdp:1580,lang:"Spanish",pop:48,gov:"Const. monarchy",flag:"🇪🇸",colors:["red","yellow"]},
+  {n:"Sweden",code:"SWE",cont:"Europe",area:173.9,gdp:590,lang:"Swedish",pop:11,gov:"Const. monarchy",flag:"🇸🇪",colors:["blue","yellow"]},
+  {n:"Switzerland",code:"CHE",cont:"Europe",area:15.9,gdp:885,lang:"German",pop:9,gov:"Republic",flag:"🇨🇭",colors:["red","white"]},
+  {n:"Thailand",code:"THA",cont:"Asia",area:198.1,gdp:510,lang:"Thai",pop:72,gov:"Const. monarchy",flag:"🇹🇭",colors:["red","white","blue"]},
+  {n:"Turkey",code:"TUR",cont:"Asia",area:302.5,gdp:1110,lang:"Turkish",pop:85,gov:"Republic",flag:"🇹🇷",colors:["red","white"]},
+  {n:"Ukraine",code:"UKR",cont:"Europe",area:233.0,gdp:180,lang:"Ukrainian",pop:37,gov:"Republic",flag:"🇺🇦",colors:["blue","yellow"]},
+  {n:"United Kingdom",code:"GBR",cont:"Europe",area:94.1,gdp:3340,lang:"English",pop:68,gov:"Const. monarchy",flag:"🇬🇧",colors:["blue","white","red"]},
+  {n:"United States",code:"USA",cont:"North America",area:3794.1,gdp:27360,lang:"English",pop:335,gov:"Republic",flag:"🇺🇸",colors:["red","white","blue"]},
+  {n:"Venezuela",code:"VEN",cont:"South America",area:352.1,gdp:100,lang:"Spanish",pop:29,gov:"Republic",flag:"🇻🇪",colors:["yellow","blue","red","white"]},
+  {n:"Vietnam",code:"VNM",cont:"Asia",area:127.9,gdp:430,lang:"Vietnamese",pop:99,gov:"One-party state",flag:"🇻🇳",colors:["red","yellow"]},
+  {n:"Egypt2",hidden:true}, // guard, ignored
+];
+// remove guard entries
+const POOL = COUNTRIES.filter(c => !c.hidden);
+
+const MAX_GUESSES = 6;
+let secret, guessCount, over;
+
+function newGame(){
+  secret = POOL[Math.floor(Math.random()*POOL.length)];
+  guessCount = 0;
+  over = false;
+  document.getElementById("guesses").innerHTML = "";
+  document.getElementById("banner-slot").innerHTML = "";
+  document.getElementById("err").textContent = "";
+  document.getElementById("guess").value = "";
+  document.getElementById("guess").disabled = false;
+  document.getElementById("submit").disabled = false;
+  document.getElementById("giveup").style.display = "inline";
+  updateTries();
+  document.getElementById("guess").focus();
+  // console hint for debugging only:
+  // console.log("secret:", secret.n);
+}
+
+function updateTries(){
+  document.getElementById("tries").textContent =
+    `Guess ${Math.min(guessCount+1,MAX_GUESSES)} of ${MAX_GUESSES}`;
+}
+
+/* ---- formatting helpers ---- */
+function fmtArea(thousands){
+  const sqmi = thousands*1000;
+  if (sqmi >= 1000) return (sqmi/1000000).toFixed(sqmi>=100000?1:2).replace(/\.0$/,'')+"M";
+  return Math.round(sqmi).toLocaleString();
+}
+function fmtAreaDiff(diffThousands){
+  const sqmi = Math.abs(diffThousands)*1000;
+  if (sqmi >= 1000000) return (sqmi/1000000).toFixed(1)+"M";
+  if (sqmi >= 1000) return Math.round(sqmi/1000)+"k";
+  return Math.round(sqmi).toString();
+}
+function fmtGdpDiff(diffBillions){
+  const b = Math.abs(diffBillions);
+  if (b >= 1000) return "$"+(b/1000).toFixed(1)+"T";
+  return "$"+Math.round(b)+"B";
+}
+function fmtPopDiff(diffMillions){
+  const m = Math.abs(diffMillions);
+  if (m >= 1000) return (m/1000).toFixed(2).replace(/\.?0+$/,'')+"B";
+  if (m >= 1) return Math.round(m)+"M";
+  return Math.round(m*1000)+"k";
+}
+
+/* ---- core clue evaluation ---- */
+function evaluate(g){
+  // continent
+  const continent = {
+    val: g.cont,
+    cls: g.cont === secret.cont ? "c-green" : "c-red"
+  };
+
+  // starting letter
+  const gl = g.n[0].toUpperCase(), sl = secret.n[0].toUpperCase();
+  const letter = {
+    val: gl,
+    cls: gl === sl ? "c-green" : "c-red",
+    sub: gl === sl ? "match" : ""
+  };
+
+  // size
+  let sizeCls, sizeVal, sizeSub;
+  const dA = secret.area - g.area; // positive => secret bigger
+  if (Math.abs(dA) < 0.001){ sizeCls="c-green"; sizeVal="exact"; sizeSub=""; }
+  else {
+    const arrow = dA > 0 ? "↑ bigger" : "↓ smaller";
+    const ratio = Math.abs(dA) / Math.max(g.area,0.001);
+    sizeCls = ratio <= 0.25 ? "c-amber" : "c-red";
+    sizeVal = fmtAreaDiff(dA)+" mi²";
+    sizeSub = arrow;
+  }
+  const size = {val:sizeVal, sub:sizeSub, cls:sizeCls};
+
+  // economy / GDP
+  let ecoCls, ecoVal, ecoSub;
+  const dG = secret.gdp - g.gdp; // positive => secret richer
+  if (dG === 0){ ecoCls="c-green"; ecoVal="exact"; ecoSub=""; }
+  else {
+    const arrow = dG > 0 ? "↑ richer" : "↓ poorer";
+    const ratio = Math.abs(dG) / Math.max(g.gdp,0.001);
+    ecoCls = ratio <= 0.25 ? "c-amber" : "c-red";
+    ecoVal = fmtGdpDiff(dG);
+    ecoSub = arrow;
+  }
+  const economy = {val:ecoVal, sub:ecoSub, cls:ecoCls};
+
+  // language
+  const language = {
+    val: g.lang,
+    cls: g.lang === secret.lang ? "c-green" : "c-red"
+  };
+
+  // flag colors: shared / secret's color count
+  const shared = secret.colors.filter(c => g.colors.includes(c)).length;
+  const pct = Math.round(100 * shared / secret.colors.length);
+  let flagCls;
+  if (pct === 100) flagCls = "c-green";
+  else if (pct >= 50) flagCls = "c-amber";
+  else flagCls = "c-red";
+  const flag = { val: pct+"%", sub: shared+" of "+secret.colors.length, cls: flagCls };
+
+  // population
+  let popCls, popVal, popSub;
+  const dP = secret.pop - g.pop; // positive => secret more populous
+  if (Math.abs(dP) < 0.001){ popCls="c-green"; popVal="exact"; popSub=""; }
+  else {
+    const arrow = dP > 0 ? "↑ more" : "↓ fewer";
+    const ratio = Math.abs(dP) / Math.max(g.pop,0.001);
+    popCls = ratio <= 0.25 ? "c-amber" : "c-red";
+    popVal = fmtPopDiff(dP);
+    popSub = arrow;
+  }
+  const population = {val:popVal, sub:popSub, cls:popCls};
+
+  // government type
+  const government = {
+    val: g.gov,
+    cls: g.gov === secret.gov ? "c-green" : "c-red"
+  };
+
+  return {continent, letter, size, economy, population, government, language, flag};
+}
+
+function clueHTML(label, c){
+  return `<div class="clue ${c.cls}">
+      <div class="lbl">${label}</div>
+      <div class="val">${c.val}</div>
+      ${c.sub ? `<div class="sub">${c.sub}</div>` : ``}
+    </div>`;
+}
+
+function renderGuess(g, ev){
+  const card = document.createElement("div");
+  card.className = "guess-card";
+  card.innerHTML = `
+    <div class="guess-name"><span class="flag">${g.flag}</span>${g.n}</div>
+    <div class="clues">
+      ${clueHTML("Continent", ev.continent)}
+      ${clueHTML("Letter", ev.letter)}
+      ${clueHTML("Size", ev.size)}
+      ${clueHTML("Population", ev.population)}
+      ${clueHTML("Economy", ev.economy)}
+      ${clueHTML("Government", ev.government)}
+      ${clueHTML("Language", ev.language)}
+      ${clueHTML("Flag", ev.flag)}
+    </div>`;
+  document.getElementById("guesses").prepend(card);
+}
+
+function endGame(won){
+  over = true;
+  document.getElementById("guess").disabled = true;
+  document.getElementById("submit").disabled = true;
+  document.getElementById("giveup").style.display = "none";
+  const slot = document.getElementById("banner-slot");
+  slot.innerHTML = `
+    <div class="banner ${won?'win':'lose'}">
+      <h2>${won ? "You found it!" : "Out of guesses"}</h2>
+      <p>${won ? `Solved in ${guessCount} ${guessCount===1?'guess':'guesses'}.` : "The secret country was"}</p>
+      <div class="answer">${secret.flag} ${secret.n}</div>
+      <button class="info-toggle" id="infoToggle">ⓘ Show its categories</button>
+      <div class="info-panel" id="infoPanel" style="display:none;">
+        <div class="info-row"><span>Continent</span><b>${secret.cont}</b></div>
+        <div class="info-row"><span>Starts with</span><b>${secret.n[0].toUpperCase()}</b></div>
+        <div class="info-row"><span>Size</span><b>${fmtArea(secret.area)} mi²</b></div>
+        <div class="info-row"><span>Population</span><b>${secret.pop >= 1000 ? (secret.pop/1000).toFixed(2).replace(/\.?0+$/,'')+"B" : secret.pop+"M"}</b></div>
+        <div class="info-row"><span>Economy (GDP)</span><b>${secret.gdp >= 1000 ? "$"+(secret.gdp/1000).toFixed(1)+"T" : "$"+secret.gdp+"B"}</b></div>
+        <div class="info-row"><span>Government</span><b>${secret.gov}</b></div>
+        <div class="info-row"><span>Language</span><b>${secret.lang}</b></div>
+        <div class="info-row"><span>Flag colors</span><b>${secret.colors.join(", ")}</b></div>
+      </div>
+      <button class="again" id="again">Play again</button>
+    </div>`;
+  document.getElementById("again").onclick = newGame;
+  document.getElementById("infoToggle").onclick = function(){
+    const p = document.getElementById("infoPanel");
+    const open = p.style.display !== "none";
+    p.style.display = open ? "none" : "block";
+    this.textContent = open ? "ⓘ Show its categories" : "ⓘ Hide categories";
+  };
+}
+
+function findCountry(name){
+  const q = name.trim().toLowerCase();
+  // exact then loose
+  let c = POOL.find(c => c.n.toLowerCase() === q);
+  if (c) return c;
+  const aliases = {
+    "usa":"United States","us":"United States","america":"United States",
+    "uk":"United Kingdom","britain":"United Kingdom","england":"United Kingdom",
+    "korea":"South Korea","uae":"Saudi Arabia"
+  };
+  if (aliases[q]) return POOL.find(c => c.n === aliases[q]);
+  return POOL.find(c => c.n.toLowerCase().startsWith(q));
+}
+
+function submitGuess(){
+  if (over) return;
+  const raw = document.getElementById("guess").value;
+  const err = document.getElementById("err");
+  if (!raw.trim()){ err.textContent = "Type a country first."; return; }
+  const g = findCountry(raw);
+  if (!g){ err.textContent = `"${raw.trim()}" isn't in this game's country list.`; return; }
+  err.textContent = "";
+  guessCount++;
+  const ev = evaluate(g);
+  renderGuess(g, ev);
+  hideSuggest();
+  document.getElementById("guess").value = "";
+  if (g.n === secret.n){ endGame(true); return; }
+  if (guessCount >= MAX_GUESSES){ endGame(false); return; }
+  updateTries();
+  document.getElementById("guess").focus();
+}
+
+/* ---- autocomplete ---- */
+let activeIdx = -1, currentMatches = [];
+function showSuggest(){
+  const q = document.getElementById("guess").value.trim().toLowerCase();
+  const box = document.getElementById("suggest");
+  if (!q){ hideSuggest(); return; }
+  currentMatches = POOL.filter(c => c.n.toLowerCase().includes(q)).slice(0,6);
+  if (!currentMatches.length){ hideSuggest(); return; }
+  box.innerHTML = currentMatches.map((c,i) =>
+    `<div data-i="${i}"><span class="sg-code">${c.code}</span> ${c.n}</div>`).join("");
+  box.style.display = "block";
+  activeIdx = -1;
+  box.querySelectorAll("div").forEach(d => {
+    d.onclick = () => { document.getElementById("guess").value = currentMatches[d.dataset.i].n; hideSuggest(); document.getElementById("guess").focus(); };
+  });
+}
+function hideSuggest(){ document.getElementById("suggest").style.display="none"; currentMatches=[]; activeIdx=-1; }
+
+const input = document.getElementById("guess");
+input.addEventListener("input", showSuggest);
+input.addEventListener("keydown", e => {
+  const box = document.getElementById("suggest");
+  if (box.style.display === "block" && currentMatches.length){
+    if (e.key === "ArrowDown"){ e.preventDefault(); activeIdx=(activeIdx+1)%currentMatches.length; }
+    else if (e.key === "ArrowUp"){ e.preventDefault(); activeIdx=(activeIdx-1+currentMatches.length)%currentMatches.length; }
+    else if (e.key === "Enter"){
+      if (activeIdx >= 0){ e.preventDefault(); input.value = currentMatches[activeIdx].n; hideSuggest(); return; }
+    }
+    box.querySelectorAll("div").forEach((d,i)=> d.classList.toggle("active", i===activeIdx));
+    if (e.key==="ArrowDown"||e.key==="ArrowUp") return;
+  }
+  if (e.key === "Enter") submitGuess();
+});
+document.addEventListener("click", e => {
+  if (!e.target.closest(".input-zone")) hideSuggest();
+});
+
+document.getElementById("submit").onclick = submitGuess;
+document.getElementById("giveup").onclick = () => { if(!over) endGame(false); };
+
+newGame();
+</script>
+</body>
+</html>
