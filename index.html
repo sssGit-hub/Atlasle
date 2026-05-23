@@ -660,6 +660,10 @@ function renderGuess(g, ev){
       ${clueHTML("Flag", ev.flag)}
     </div>`;
   document.getElementById("guesses").prepend(card);
+  // Bring the newest guess into view so there's no confusion about which is latest
+  requestAnimationFrame(() => {
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 }
 
 function endGame(won){
@@ -693,6 +697,10 @@ function endGame(won){
     p.style.display = open ? "none" : "block";
     this.textContent = open ? "ⓘ Show its categories" : "ⓘ Hide categories";
   };
+  // On game end, show the result banner rather than the last guess card
+  requestAnimationFrame(() => {
+    slot.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 }
 
 function findCountry(name){
