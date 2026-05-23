@@ -183,12 +183,7 @@
     font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px;
     margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
   }
-  .guess-name .flag {
-    font-family: 'Spline Sans Mono', monospace;
-    font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
-    color: var(--ink-soft); background: rgba(43,33,24,0.06);
-    padding: 2px 7px; border-radius: 3px;
-  }
+  .guess-name .flag { font-size: 22px; line-height: 1; }
   .clues { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
   @media (max-width: 600px) { .clues { grid-template-columns: repeat(2,1fr); } }
   .clue {
@@ -269,15 +264,18 @@
       </div>
 
       <h3>The eight clues</h3>
+      <p style="margin:6px 0 10px;padding:8px 12px;background:rgba(43,33,24,0.05);border-left:3px solid var(--ink);border-radius:3px;">
+        <b>Important:</b> Size, Population, and Economy show the <b>difference</b> between your guess and the secret country — not your guess's own stats. "39k mi² off ↓ smaller" means the secret country is 39k mi² smaller than what you guessed, not that your guess is 39k mi².
+      </p>
       <div class="clue-key">
         <div class="row"><span class="nm">Continent</span><span>Green if same continent, red if not.</span></div>
         <div class="row"><span class="nm">Letter</span><span>First letter of the country's official name. Green if it matches.</span></div>
-        <div class="row"><span class="nm">Size</span><span>Land area. Shows how many square miles your guess is off, plus an arrow: ↑ the secret country is bigger, ↓ it's smaller.</span></div>
-        <div class="row"><span class="nm">Population</span><span>Shows how many people off your guess is, with ↑ (secret has more) or ↓ (fewer).</span></div>
-        <div class="row"><span class="nm">Economy</span><span>GDP. Shows how far off in US dollars, with ↑ (secret is richer) or ↓ (poorer).</span></div>
+        <div class="row"><span class="nm">Size</span><span>Land area. Shows how many square miles the secret country is off from your guess, plus an arrow: ↑ the secret country is bigger, ↓ it's smaller.</span></div>
+        <div class="row"><span class="nm">Population</span><span>How many people the secret country is off from your guess, with ↑ (secret has more) or ↓ (fewer).</span></div>
+        <div class="row"><span class="nm">Economy</span><span>GDP. How far off the secret country is in US dollars, with ↑ (secret is richer) or ↓ (poorer).</span></div>
         <div class="row"><span class="nm">Government</span><span>Type of government (republic, constitutional monarchy, etc.). Green if it's the same.</span></div>
         <div class="row"><span class="nm">Language</span><span>Most widely spoken language. Green if it's the same.</span></div>
-        <div class="row"><span class="nm">Flag</span><span>Percent of the secret flag's colors that also appear on your guess's flag. Guess USA against China → 50% (both have red).</span></div>
+        <div class="row"><span class="nm">Flag</span><span>Percent of the secret flag's colors (including emblems and coats of arms) that also appear on your guess's flag. Guess USA against China → 50% (both have red).</span></div>
       </div>
       <p style="margin-top:12px;font-style:italic;">Tip: the size and economy arrows are your compass — follow them toward bigger/smaller and richer/poorer countries.</p>
     </div>
@@ -310,201 +308,201 @@
    colors = set of flag colors (named)
 */
 const COUNTRIES = [
-  {n:"Afghanistan",code:"AFG",cont:"Asia",area:251.827,gdp:19.66,lang:"Persian",pop:45.0,gov:"Theocracy",colors:["white", "black", "red", "green"]},
-  {n:"Albania",code:"ALB",cont:"Europe",area:11.1,gdp:33.33,lang:"Albanian",pop:2.8,gov:"Republic",colors:["red", "black"]},
-  {n:"Algeria",code:"DZA",cont:"Africa",area:919.595,gdp:317.17,lang:"Arabic",pop:48.0,gov:"Republic",colors:["green", "white", "red"]},
-  {n:"Andorra",code:"AND",cont:"Europe",area:0.181,gdp:4.88,lang:"Catalan",pop:0.084,gov:"Const. monarchy",colors:["blue", "yellow", "red"]},
-  {n:"Angola",code:"AGO",cont:"Africa",area:481.353,gdp:152.35,lang:"Portuguese",pop:40.2,gov:"Republic",colors:["red", "black", "yellow"]},
-  {n:"Antigua and Barbuda",code:"ATG",cont:"North America",area:0.171,gdp:2.38,lang:"English",pop:0.095,gov:"Const. monarchy",colors:["red", "white", "blue", "black", "yellow"]},
-  {n:"Argentina",code:"ARG",cont:"South America",area:1073.518,gdp:688.38,lang:"Spanish",pop:46.0,gov:"Republic",colors:["blue", "white", "yellow"]},
-  {n:"Armenia",code:"ARM",cont:"Asia",area:11.484,gdp:31.87,lang:"Armenian",pop:2.9,gov:"Republic",colors:["red", "blue", "yellow"]},
-  {n:"Australia",code:"AUS",cont:"Oceania",area:2969.906,gdp:2123.96,lang:"English",pop:27.2,gov:"Const. monarchy",colors:["blue", "white", "red"]},
-  {n:"Austria",code:"AUT",cont:"Europe",area:32.383,gdp:623.72,lang:"German",pop:9.1,gov:"Republic",colors:["red", "white"]},
-  {n:"Azerbaijan",code:"AZE",cont:"Asia",area:33.436,gdp:78.37,lang:"Azerbaijani",pop:10.5,gov:"Republic",colors:["blue", "red", "green", "white"]},
-  {n:"Bahamas",code:"BHS",cont:"North America",area:5.383,gdp:17.04,lang:"English",pop:0.4,gov:"Const. monarchy",colors:["black", "yellow", "blue"]},
-  {n:"Bahrain",code:"BHR",cont:"Asia",area:0.295,gdp:48.85,lang:"Arabic",pop:1.7,gov:"Const. monarchy",colors:["white", "red"]},
-  {n:"Bangladesh",code:"BGD",cont:"Asia",area:56.977,gdp:510.7,lang:"Bengali",pop:177.8,gov:"Republic",colors:["green", "red"]},
-  {n:"Barbados",code:"BRB",cont:"North America",area:0.166,gdp:8.48,lang:"English",pop:0.28,gov:"Republic",colors:["blue", "yellow", "black"]},
-  {n:"Belarus",code:"BLR",cont:"Europe",area:80.155,gdp:102.04,lang:"Russian",pop:8.9,gov:"Republic",colors:["red", "green", "white"]},
-  {n:"Belgium",code:"BEL",cont:"Europe",area:11.787,gdp:776.73,lang:"Dutch",pop:11.8,gov:"Const. monarchy",colors:["black", "yellow", "red"]},
-  {n:"Belize",code:"BLZ",cont:"North America",area:8.867,gdp:3.45,lang:"English",pop:0.4,gov:"Const. monarchy",colors:["blue", "red", "white"]},
-  {n:"Benin",code:"BEN",cont:"Africa",area:43.484,gdp:27.79,lang:"French",pop:15.17,gov:"Republic",colors:["green", "yellow", "red"]},
-  {n:"Bhutan",code:"BTN",cont:"Asia",area:14.824,gdp:3.86,lang:"Dzongkha",pop:0.8,gov:"Const. monarchy",colors:["yellow", "orange", "white", "red"]},
-  {n:"Bolivia",code:"BOL",cont:"South America",area:424.164,gdp:80.74,lang:"Spanish",pop:12.7,gov:"Republic",colors:["red", "yellow", "green"]},
-  {n:"Bosnia and Herzegovina",code:"BIH",cont:"Europe",area:19.772,gdp:36.77,lang:"Bosnian",pop:3.1,gov:"Republic",colors:["blue", "yellow", "white"]},
-  {n:"Botswana",code:"BWA",cont:"Africa",area:224.711,gdp:21.94,lang:"English",pop:2.6,gov:"Republic",colors:["blue", "white", "black"]},
-  {n:"Brazil",code:"BRA",cont:"South America",area:3287.955,gdp:2635.91,lang:"Portuguese",pop:213.6,gov:"Republic",colors:["green", "yellow", "blue", "white"]},
-  {n:"Brunei",code:"BRN",cont:"Asia",area:2.226,gdp:16.86,lang:"Malay",pop:0.5,gov:"Absolute monarchy",colors:["yellow", "white", "black", "red"]},
-  {n:"Bulgaria",code:"BGR",cont:"Europe",area:42.811,gdp:148.12,lang:"Bulgarian",pop:6.7,gov:"Republic",colors:["white", "green", "red"]},
-  {n:"Burkina Faso",code:"BFA",cont:"Africa",area:105.393,gdp:32.51,lang:"French",pop:24.6,gov:"Republic",colors:["red", "green", "yellow"]},
-  {n:"Burundi",code:"BDI",cont:"Africa",area:10.747,gdp:8.14,lang:"Kirundi",pop:14.73,gov:"Republic",colors:["red", "white", "green"]},
-  {n:"Cambodia",code:"KHM",cont:"Asia",area:69.898,gdp:52.38,lang:"Khmer",pop:18.1,gov:"Const. monarchy",colors:["red", "blue", "white"]},
-  {n:"Cameroon",code:"CMR",cont:"Africa",area:183.569,gdp:65.14,lang:"French",pop:30.6,gov:"Republic",colors:["green", "red", "yellow"]},
-  {n:"Canada",code:"CAN",cont:"North America",area:3855.101,gdp:2507.34,lang:"English",pop:40.5,gov:"Const. monarchy",colors:["red", "white"]},
-  {n:"Cape Verde",code:"CPV",cont:"Africa",area:1.557,gdp:3.45,lang:"Portuguese",pop:0.5,gov:"Republic",colors:["blue", "white", "red", "yellow"]},
-  {n:"Central African Republic",code:"CAF",cont:"Africa",area:240.535,gdp:3.49,lang:"French",pop:5.7,gov:"Republic",colors:["blue", "white", "green", "yellow", "red"]},
-  {n:"Chad",code:"TCD",cont:"Africa",area:495.755,gdp:25.63,lang:"French",pop:21.6,gov:"Republic",colors:["blue", "yellow", "red"]},
-  {n:"Chile",code:"CHL",cont:"South America",area:291.932,gdp:407.85,lang:"Spanish",pop:19.9,gov:"Republic",colors:["red", "white", "blue"]},
-  {n:"China",code:"CHN",cont:"Asia",area:3747.877,gdp:20851.59,lang:"Mandarin",pop:1412.9,gov:"One-party state",colors:["red", "yellow"]},
-  {n:"Colombia",code:"COL",cont:"South America",area:440.831,gdp:539.53,lang:"Spanish",pop:53.9,gov:"Republic",colors:["yellow", "blue", "red"]},
-  {n:"Comoros",code:"COM",cont:"Africa",area:0.719,gdp:1.81,lang:"Comorian",pop:0.9,gov:"Republic",colors:["yellow", "white", "red", "blue", "green"]},
-  {n:"Costa Rica",code:"CRI",cont:"North America",area:19.73,gdp:109.93,lang:"Spanish",pop:5.2,gov:"Republic",colors:["blue", "white", "red"]},
-  {n:"Croatia",code:"HRV",cont:"Europe",area:21.851,gdp:116.57,lang:"Croatian",pop:3.8,gov:"Republic",colors:["red", "white", "blue"]},
-  {n:"Cuba",code:"CUB",cont:"North America",area:42.426,gdp:201.99,lang:"Spanish",pop:10.9,gov:"One-party state",colors:["blue", "white", "red"]},
-  {n:"Cyprus",code:"CYP",cont:"Asia",area:3.572,gdp:45.17,lang:"Greek",pop:1.4,gov:"Republic",colors:["white", "yellow", "green"]},
-  {n:"Czech Republic",code:"CZE",cont:"Europe",area:30.45,gdp:432.6,lang:"Czech",pop:10.53,gov:"Republic",colors:["white", "red", "blue"]},
-  {n:"Democratic Republic of the Congo",code:"COD",cont:"Africa",area:905.354,gdp:123.41,lang:"French",pop:116.5,gov:"Republic",colors:["blue", "yellow", "red"]},
-  {n:"Denmark",code:"DNK",cont:"Europe",area:16.639,gdp:503.77,lang:"Danish",pop:6.0,gov:"Const. monarchy",colors:["red", "white"]},
-  {n:"Djibouti",code:"DJI",cont:"Africa",area:8.958,gdp:4.72,lang:"Arabic",pop:1.2,gov:"Republic",colors:["white", "blue", "green", "red"]},
-  {n:"Dominica",code:"DMA",cont:"North America",area:0.29,gdp:0.79,lang:"English",pop:0.066,gov:"Republic",colors:["green", "yellow", "black", "white", "red"]},
-  {n:"Dominican Republic",code:"DOM",cont:"North America",area:18.792,gdp:136.15,lang:"Spanish",pop:11.6,gov:"Republic",colors:["blue", "red", "white"]},
-  {n:"East Timor",code:"TLS",cont:"Asia",area:5.743,gdp:2.17,lang:"Tetum",pop:1.4,gov:"Republic",colors:["red", "yellow", "black", "white"]},
-  {n:"Ecuador",code:"ECU",cont:"South America",area:106.889,gdp:138.19,lang:"Spanish",pop:18.44,gov:"Republic",colors:["yellow", "blue", "red"]},
-  {n:"Egypt",code:"EGY",cont:"Africa",area:387.048,gdp:429.64,lang:"Arabic",pop:120.1,gov:"Republic",colors:["red", "white", "black"]},
-  {n:"El Salvador",code:"SLV",cont:"North America",area:8.124,gdp:39.84,lang:"Spanish",pop:6.4,gov:"Republic",colors:["blue", "white"]},
-  {n:"Equatorial Guinea",code:"GNQ",cont:"Africa",area:10.831,gdp:13.72,lang:"Spanish",pop:2.0,gov:"Republic",colors:["green", "white", "red", "blue"]},
-  {n:"Eritrea",code:"ERI",cont:"Africa",area:45.406,gdp:2.28,lang:"Tigrinya",pop:3.7,gov:"One-party state",colors:["green", "red", "blue", "yellow"]},
-  {n:"Estonia",code:"EST",cont:"Europe",area:17.462,gdp:51.63,lang:"Estonian",pop:1.3,gov:"Republic",colors:["blue", "black", "white"]},
-  {n:"Eswatini",code:"SWZ",cont:"Africa",area:6.704,gdp:5.79,lang:"Swazi",pop:1.3,gov:"Absolute monarchy",colors:["blue", "yellow", "red", "white", "black"]},
-  {n:"Ethiopia",code:"ETH",cont:"Africa",area:426.372,gdp:121.53,lang:"Amharic",pop:138.9,gov:"Republic",colors:["green", "yellow", "red", "blue"]},
-  {n:"Federated States of Micronesia",code:"FSM",cont:"Oceania",area:0.271,gdp:0.52,lang:"English",pop:0.1,gov:"Republic",colors:["blue", "white"]},
-  {n:"Fiji",code:"FJI",cont:"Oceania",area:7.055,gdp:6.35,lang:"English",pop:0.9,gov:"Republic",colors:["blue", "white", "red"]},
-  {n:"Finland",code:"FIN",cont:"Europe",area:130.666,gdp:337.67,lang:"Finnish",pop:5.6,gov:"Republic",colors:["white", "blue"]},
-  {n:"France",code:"FRA",cont:"Europe",area:213.011,gdp:3596.09,lang:"French",pop:66.7,gov:"Republic",colors:["blue", "white", "red"]},
-  {n:"Gabon",code:"GAB",cont:"Africa",area:103.347,gdp:23.36,lang:"French",pop:2.6,gov:"Republic",colors:["green", "yellow", "blue"]},
-  {n:"Gambia",code:"GMB",cont:"Africa",area:4.127,gdp:2.79,lang:"English",pop:2.9,gov:"Republic",colors:["red", "blue", "green", "white"]},
-  {n:"Georgia",code:"GEO",cont:"Asia",area:26.911,gdp:42.72,lang:"Georgian",pop:3.8,gov:"Republic",colors:["white", "red"]},
-  {n:"Germany",code:"DEU",cont:"Europe",area:137.882,gdp:5452.86,lang:"German",pop:83.6,gov:"Republic",colors:["black", "red", "yellow"]},
-  {n:"Ghana",code:"GHA",cont:"Africa",area:92.098,gdp:118.29,lang:"English",pop:35.7,gov:"Republic",colors:["red", "yellow", "green", "black"]},
-  {n:"Greece",code:"GRC",cont:"Europe",area:50.962,gdp:307.55,lang:"Greek",pop:9.9,gov:"Republic",colors:["blue", "white"]},
-  {n:"Grenada",code:"GRD",cont:"North America",area:0.133,gdp:1.48,lang:"English",pop:0.117,gov:"Const. monarchy",colors:["red", "yellow", "green"]},
-  {n:"Guatemala",code:"GTM",cont:"North America",area:42.042,gdp:128.89,lang:"Spanish",pop:19.0,gov:"Republic",colors:["blue", "white"]},
-  {n:"Guinea",code:"GIN",cont:"Africa",area:94.926,gdp:29.93,lang:"French",pop:15.44,gov:"Republic",colors:["red", "yellow", "green"]},
-  {n:"Guinea-Bissau",code:"GNB",cont:"Africa",area:13.948,gdp:2.98,lang:"Portuguese",pop:2.3,gov:"Republic",colors:["red", "yellow", "green", "black"]},
-  {n:"Guyana",code:"GUY",cont:"South America",area:83.0,gdp:33.96,lang:"English",pop:0.8,gov:"Republic",colors:["green", "white", "yellow", "red", "black"]},
-  {n:"Haiti",code:"HTI",cont:"North America",area:10.714,gdp:39.18,lang:"Haitian Creole",pop:12.04,gov:"Republic",colors:["blue", "red", "white"]},
-  {n:"Honduras",code:"HND",cont:"North America",area:43.433,gdp:41.51,lang:"Spanish",pop:11.2,gov:"Republic",colors:["blue", "white"]},
-  {n:"Hungary",code:"HUN",cont:"Europe",area:35.918,gdp:271.12,lang:"Hungarian",pop:9.6,gov:"Republic",colors:["red", "white", "green"]},
-  {n:"Iceland",code:"ISL",cont:"Europe",area:39.769,gdp:43.8,lang:"Icelandic",pop:0.4,gov:"Republic",colors:["blue", "white", "red"]},
-  {n:"India",code:"IND",cont:"Asia",area:1269.345,gdp:4153.19,lang:"Hindi",pop:1476.6,gov:"Republic",colors:["orange", "white", "green", "blue"]},
-  {n:"Indonesia",code:"IDN",cont:"Asia",area:735.358,gdp:1539.87,lang:"Indonesian",pop:287.9,gov:"Republic",colors:["red", "white"]},
-  {n:"Iran",code:"IRN",cont:"Asia",area:636.371,gdp:300.29,lang:"Persian",pop:93.2,gov:"Theocracy",colors:["green", "white", "red"]},
-  {n:"Iraq",code:"IRQ",cont:"Asia",area:169.235,gdp:264.78,lang:"Arabic",pop:48.0,gov:"Republic",colors:["red", "white", "black", "green"]},
-  {n:"Ireland",code:"IRL",cont:"Europe",area:27.133,gdp:779.38,lang:"English",pop:5.4,gov:"Republic",colors:["green", "white", "orange"]},
-  {n:"Israel",code:"ISR",cont:"Asia",area:8.019,gdp:719.85,lang:"Hebrew",pop:9.6,gov:"Republic",colors:["blue", "white"]},
-  {n:"Italy",code:"ITA",cont:"Europe",area:116.346,gdp:2738.16,lang:"Italian",pop:58.9,gov:"Republic",colors:["green", "white", "red"]},
-  {n:"Ivory Coast",code:"CIV",cont:"Africa",area:124.504,gdp:112.11,lang:"French",pop:33.5,gov:"Republic",colors:["orange", "white", "green"]},
-  {n:"Jamaica",code:"JAM",cont:"North America",area:4.244,gdp:23.03,lang:"English",pop:2.8,gov:"Const. monarchy",colors:["green", "yellow", "black"]},
-  {n:"Japan",code:"JPN",cont:"Asia",area:145.92,gdp:4379.25,lang:"Japanese",pop:122.4,gov:"Const. monarchy",colors:["white", "red"]},
-  {n:"Jordan",code:"JOR",cont:"Asia",area:34.495,gdp:64.91,lang:"Arabic",pop:11.6,gov:"Const. monarchy",colors:["black", "white", "red", "green"]},
-  {n:"Kazakhstan",code:"KAZ",cont:"Asia",area:1052.089,gdp:360.46,lang:"Kazakh",pop:21.1,gov:"Republic",colors:["blue", "yellow"]},
-  {n:"Kenya",code:"KEN",cont:"Africa",area:224.081,gdp:147.26,lang:"Swahili",pop:58.6,gov:"Republic",colors:["black", "red", "green", "white"]},
-  {n:"Kiribati",code:"KIR",cont:"Oceania",area:0.313,gdp:0.4,lang:"English",pop:0.138,gov:"Republic",colors:["red", "white", "blue", "yellow"]},
-  {n:"Kuwait",code:"KWT",cont:"Asia",area:6.88,gdp:172.92,lang:"Arabic",pop:5.1,gov:"Const. monarchy",colors:["green", "white", "red", "black"]},
-  {n:"Kyrgyzstan",code:"KGZ",cont:"Asia",area:77.201,gdp:23.61,lang:"Kyrgyz",pop:7.4,gov:"Republic",colors:["red", "yellow"]},
-  {n:"Laos",code:"LAO",cont:"Asia",area:91.429,gdp:18.96,lang:"Lao",pop:8.0,gov:"One-party state",colors:["red", "blue", "white"]},
-  {n:"Latvia",code:"LVA",cont:"Europe",area:24.926,gdp:53.69,lang:"Latvian",pop:1.8,gov:"Republic",colors:["red", "white"]},
-  {n:"Lebanon",code:"LBN",cont:"Asia",area:4.036,gdp:34.5,lang:"Arabic",pop:5.9,gov:"Republic",colors:["red", "white", "green"]},
-  {n:"Lesotho",code:"LSO",cont:"Africa",area:11.72,gdp:2.97,lang:"Sotho",pop:2.4,gov:"Const. monarchy",colors:["blue", "white", "green", "black"]},
-  {n:"Liberia",code:"LBR",cont:"Africa",area:43.0,gdp:5.64,lang:"English",pop:5.9,gov:"Republic",colors:["red", "white", "blue"]},
-  {n:"Libya",code:"LBY",cont:"Africa",area:679.362,gdp:52.45,lang:"Arabic",pop:7.5,gov:"Republic",colors:["red", "black", "green"]},
-  {n:"Liechtenstein",code:"LIE",cont:"Europe",area:0.062,gdp:9.44,lang:"German",pop:0.04,gov:"Const. monarchy",colors:["blue", "red", "yellow", "black"]},
-  {n:"Lithuania",code:"LTU",cont:"Europe",area:25.212,gdp:105.91,lang:"Lithuanian",pop:2.8,gov:"Republic",colors:["yellow", "green", "red"]},
-  {n:"Luxembourg",code:"LUX",cont:"Europe",area:0.998,gdp:110.42,lang:"Luxembourgish",pop:0.7,gov:"Const. monarchy",colors:["red", "white", "blue"]},
-  {n:"Madagascar",code:"MDG",cont:"Africa",area:226.658,gdp:21.18,lang:"Malagasy",pop:33.5,gov:"Republic",colors:["white", "red", "green"]},
-  {n:"Malawi",code:"MWI",cont:"Africa",area:45.747,gdp:18.15,lang:"English",pop:22.8,gov:"Republic",colors:["black", "red", "green"]},
-  {n:"Malaysia",code:"MYS",cont:"Asia",area:127.724,gdp:516.43,lang:"Malay",pop:36.4,gov:"Const. monarchy",colors:["red", "white", "blue", "yellow"]},
-  {n:"Maldives",code:"MDV",cont:"Asia",area:0.116,gdp:8.13,lang:"Dhivehi",pop:0.5,gov:"Republic",colors:["red", "green", "white"]},
-  {n:"Mali",code:"MLI",cont:"Africa",area:478.841,gdp:33.85,lang:"French",pop:25.9,gov:"Republic",colors:["green", "yellow", "red"]},
-  {n:"Malta",code:"MLT",cont:"Europe",area:0.122,gdp:30.71,lang:"Maltese",pop:0.5,gov:"Republic",colors:["white", "red"]},
-  {n:"Marshall Islands",code:"MHL",cont:"Oceania",area:0.07,gdp:0.34,lang:"English",pop:0.035,gov:"Republic",colors:["blue", "white", "orange"]},
-  {n:"Mauritania",code:"MRT",cont:"Africa",area:397.955,gdp:14.35,lang:"Arabic",pop:5.5,gov:"Republic",colors:["green", "yellow", "red"]},
-  {n:"Mauritius",code:"MUS",cont:"Africa",area:0.788,gdp:17.12,lang:"English",pop:1.3,gov:"Republic",colors:["red", "blue", "yellow", "green"]},
-  {n:"Mexico",code:"MEX",cont:"North America",area:758.449,gdp:2120.86,lang:"Spanish",pop:133.0,gov:"Republic",colors:["green", "white", "red"]},
-  {n:"Moldova",code:"MDA",cont:"Europe",area:13.068,gdp:21.89,lang:"Romanian",pop:3.0,gov:"Republic",colors:["blue", "yellow", "red"]},
-  {n:"Monaco",code:"MCO",cont:"Europe",area:0.001,gdp:10.0,lang:"French",pop:0.038,gov:"Const. monarchy",colors:["red", "white"]},
-  {n:"Mongolia",code:"MNG",cont:"Asia",area:603.906,gdp:28.45,lang:"Mongolian",pop:3.6,gov:"Republic",colors:["red", "blue", "yellow"]},
-  {n:"Montenegro",code:"MNE",cont:"Europe",area:5.333,gdp:10.23,lang:"Montenegrin",pop:0.6,gov:"Republic",colors:["red", "yellow"]},
-  {n:"Morocco",code:"MAR",cont:"Africa",area:172.414,gdp:194.33,lang:"Arabic",pop:38.8,gov:"Const. monarchy",colors:["red", "green"]},
-  {n:"Mozambique",code:"MOZ",cont:"Africa",area:309.496,gdp:23.27,lang:"Portuguese",pop:36.6,gov:"Republic",colors:["green", "black", "yellow", "white", "red"]},
-  {n:"Myanmar",code:"MMR",cont:"Asia",area:261.228,gdp:83.83,lang:"Burmese",pop:55.2,gov:"Republic",colors:["yellow", "green", "red", "white"]},
-  {n:"Namibia",code:"NAM",cont:"Africa",area:318.772,gdp:17.31,lang:"English",pop:3.2,gov:"Republic",colors:["blue", "red", "green", "white", "yellow"]},
-  {n:"Nauru",code:"NRU",cont:"Oceania",area:0.008,gdp:0.2,lang:"English",pop:0.012,gov:"Republic",colors:["blue", "yellow", "white"]},
-  {n:"Nepal",code:"NPL",cont:"Asia",area:56.827,gdp:45.84,lang:"Nepali",pop:29.6,gov:"Republic",colors:["red", "blue", "white"]},
-  {n:"Netherlands",code:"NLD",cont:"Europe",area:16.158,gdp:1449.7,lang:"Dutch",pop:18.4,gov:"Const. monarchy",colors:["red", "white", "blue"]},
-  {n:"New Zealand",code:"NZL",cont:"Oceania",area:104.428,gdp:278.64,lang:"English",pop:5.3,gov:"Const. monarchy",colors:["blue", "red", "white"]},
-  {n:"Nicaragua",code:"NIC",cont:"North America",area:50.337,gdp:24.23,lang:"Spanish",pop:7.1,gov:"Republic",colors:["blue", "white"]},
-  {n:"Niger",code:"NER",cont:"Africa",area:489.191,gdp:24.81,lang:"Hausa",pop:28.8,gov:"Republic",colors:["orange", "white", "green"]},
-  {n:"Nigeria",code:"NGA",cont:"Africa",area:356.669,gdp:377.37,lang:"English",pop:242.4,gov:"Republic",colors:["green", "white"]},
-  {n:"North Korea",code:"PRK",cont:"Asia",area:46.54,gdp:16.45,lang:"Korean",pop:26.6,gov:"One-party state",colors:["blue", "red", "white"]},
-  {n:"North Macedonia",code:"MKD",cont:"Europe",area:9.928,gdp:21.61,lang:"Macedonian",pop:1.8,gov:"Republic",colors:["red", "yellow"]},
-  {n:"Norway",code:"NOR",cont:"Europe",area:125.021,gdp:599.41,lang:"Norwegian",pop:5.7,gov:"Const. monarchy",colors:["red", "white", "blue"]},
-  {n:"Oman",code:"OMN",cont:"Asia",area:119.499,gdp:117.18,lang:"Arabic",pop:5.7,gov:"Absolute monarchy",colors:["red", "white", "green"]},
-  {n:"Pakistan",code:"PAK",cont:"Asia",area:340.508,gdp:407.79,lang:"Urdu",pop:259.3,gov:"Republic",colors:["green", "white"]},
-  {n:"Palau",code:"PLW",cont:"Oceania",area:0.177,gdp:0.38,lang:"English",pop:0.018,gov:"Republic",colors:["blue", "yellow"]},
-  {n:"Palestine",code:"PSE",cont:"Asia",area:2.402,gdp:13.71,lang:"Arabic",pop:5.7,gov:"Republic",colors:["black", "white", "green", "red"]},
-  {n:"Panama",code:"PAN",cont:"North America",area:29.119,gdp:95.02,lang:"Spanish",pop:4.6,gov:"Republic",colors:["red", "white", "blue"]},
-  {n:"Papua New Guinea",code:"PNG",cont:"Oceania",area:178.703,gdp:34.4,lang:"English",pop:10.9,gov:"Const. monarchy",colors:["red", "black", "yellow", "white"]},
-  {n:"Paraguay",code:"PRY",cont:"South America",area:157.048,gdp:60.54,lang:"Spanish",pop:7.1,gov:"Republic",colors:["red", "white", "blue"]},
-  {n:"Peru",code:"PER",cont:"South America",area:496.224,gdp:380.9,lang:"Spanish",pop:34.9,gov:"Republic",colors:["red", "white"]},
-  {n:"Philippines",code:"PHL",cont:"Asia",area:132.183,gdp:512.22,lang:"Filipino",pop:117.7,gov:"Republic",colors:["blue", "red", "white", "yellow"]},
-  {n:"Poland",code:"POL",cont:"Europe",area:120.726,gdp:1134.25,lang:"Polish",pop:37.8,gov:"Republic",colors:["white", "red"]},
-  {n:"Portugal",code:"PRT",cont:"Europe",area:35.556,gdp:380.64,lang:"Portuguese",pop:10.4,gov:"Republic",colors:["green", "red", "white", "yellow"]},
-  {n:"Qatar",code:"QAT",cont:"Asia",area:4.473,gdp:217.42,lang:"Arabic",pop:3.2,gov:"Const. monarchy",colors:["red", "white"]},
-  {n:"Republic of the Congo",code:"COG",cont:"Africa",area:132.047,gdp:17.03,lang:"French",pop:6.6,gov:"Republic",colors:["green", "yellow", "red"]},
-  {n:"Romania",code:"ROU",cont:"Europe",area:92.043,gdp:480.83,lang:"Romanian",pop:18.8,gov:"Republic",colors:["blue", "yellow", "red"]},
-  {n:"Russia",code:"RUS",cont:"Europe",area:6601.665,gdp:2656.45,lang:"Russian",pop:143.4,gov:"Republic",colors:["white", "blue", "red"]},
-  {n:"Rwanda",code:"RWA",cont:"Africa",area:10.169,gdp:17.34,lang:"Kinyarwanda",pop:14.89,gov:"Republic",colors:["blue", "yellow", "green"]},
-  {n:"Saint Kitts and Nevis",code:"KNA",cont:"North America",area:0.101,gdp:1.14,lang:"English",pop:0.047,gov:"Const. monarchy",colors:["green", "yellow", "red", "black", "white"]},
-  {n:"Saint Lucia",code:"LCA",cont:"North America",area:0.238,gdp:2.77,lang:"English",pop:0.2,gov:"Const. monarchy",colors:["blue", "yellow", "black", "white"]},
-  {n:"Saint Vincent and the Grenadines",code:"VCT",cont:"North America",area:0.15,gdp:1.24,lang:"English",pop:0.099,gov:"Const. monarchy",colors:["blue", "yellow", "green"]},
-  {n:"Samoa",code:"WSM",cont:"Oceania",area:1.097,gdp:1.38,lang:"Samoan",pop:0.2,gov:"Republic",colors:["red", "blue", "white"]},
-  {n:"San Marino",code:"SMR",cont:"Europe",area:0.024,gdp:2.42,lang:"Italian",pop:0.034,gov:"Republic",colors:["white", "blue"]},
-  {n:"Sao Tome and Principe",code:"STP",cont:"Africa",area:0.372,gdp:1.16,lang:"Portuguese",pop:0.2,gov:"Republic",colors:["green", "yellow", "red", "black"]},
-  {n:"Saudi Arabia",code:"SAU",cont:"Asia",area:830.0,gdp:1388.68,lang:"Arabic",pop:35.2,gov:"Absolute monarchy",colors:["green", "white"]},
-  {n:"Senegal",code:"SEN",cont:"Africa",area:75.955,gdp:40.47,lang:"French",pop:19.4,gov:"Republic",colors:["green", "yellow", "red"]},
-  {n:"Serbia",code:"SRB",cont:"Europe",area:34.116,gdp:112.03,lang:"Serbian",pop:6.6,gov:"Republic",colors:["red", "blue", "white"]},
-  {n:"Seychelles",code:"SYC",cont:"Africa",area:0.175,gdp:2.25,lang:"Seychellois Creole",pop:0.135,gov:"Republic",colors:["blue", "yellow", "red", "white", "green"]},
-  {n:"Sierra Leone",code:"SLE",cont:"Africa",area:27.699,gdp:8.27,lang:"English",pop:9.0,gov:"Republic",colors:["green", "white", "blue"]},
-  {n:"Singapore",code:"SGP",cont:"Asia",area:0.274,gdp:659.57,lang:"English",pop:5.9,gov:"Republic",colors:["red", "white"]},
-  {n:"Slovakia",code:"SVK",cont:"Europe",area:18.933,gdp:168.9,lang:"Slovak",pop:5.5,gov:"Republic",colors:["white", "blue", "red"]},
-  {n:"Slovenia",code:"SVN",cont:"Europe",area:7.827,gdp:86.73,lang:"Slovene",pop:2.1,gov:"Republic",colors:["white", "blue", "red"]},
-  {n:"Solomon Islands",code:"SLB",cont:"Oceania",area:11.157,gdp:1.84,lang:"English",pop:0.9,gov:"Const. monarchy",colors:["blue", "yellow", "green", "white"]},
-  {n:"Somalia",code:"SOM",cont:"Africa",area:246.201,gdp:14.17,lang:"Somali",pop:20.3,gov:"Republic",colors:["blue", "white"]},
-  {n:"South Africa",code:"ZAF",cont:"Africa",area:471.445,gdp:479.96,lang:"Zulu",pop:65.5,gov:"Republic",colors:["red", "white", "blue", "green", "yellow", "black"]},
-  {n:"South Korea",code:"KOR",cont:"Asia",area:38.691,gdp:1931.01,lang:"Korean",pop:51.6,gov:"Republic",colors:["white", "red", "blue", "black"]},
-  {n:"South Sudan",code:"SSD",cont:"Africa",area:239.285,gdp:6.07,lang:"English",pop:12.44,gov:"Republic",colors:["black", "red", "green", "white", "blue", "yellow"]},
-  {n:"Spain",code:"ESP",cont:"Europe",area:195.365,gdp:2091.22,lang:"Spanish",pop:47.9,gov:"Const. monarchy",colors:["red", "yellow"]},
-  {n:"Sri Lanka",code:"LKA",cont:"Asia",area:25.332,gdp:98.96,lang:"Sinhala",pop:23.3,gov:"Republic",colors:["yellow", "red", "green", "orange"]},
-  {n:"Sudan",code:"SDN",cont:"Africa",area:728.215,gdp:44.69,lang:"Arabic",pop:53.3,gov:"Republic",colors:["red", "white", "black", "green"]},
-  {n:"Suriname",code:"SUR",cont:"South America",area:63.251,gdp:5.91,lang:"Dutch",pop:0.6,gov:"Republic",colors:["green", "white", "red", "yellow"]},
-  {n:"Sweden",code:"SWE",cont:"Europe",area:173.86,gdp:760.48,lang:"Swedish",pop:10.7,gov:"Const. monarchy",colors:["blue", "yellow"]},
-  {n:"Switzerland",code:"CHE",cont:"Europe",area:15.94,gdp:1146.91,lang:"German",pop:9.0,gov:"Republic",colors:["red", "white"]},
-  {n:"Syria",code:"SYR",cont:"Asia",area:71.498,gdp:19.99,lang:"Arabic",pop:26.5,gov:"Republic",colors:["green", "white", "black", "red"]},
-  {n:"Tajikistan",code:"TJK",cont:"Asia",area:55.251,gdp:20.42,lang:"Tajik",pop:10.98,gov:"Republic",colors:["red", "white", "green", "yellow"]},
-  {n:"Tanzania",code:"TZA",cont:"Africa",area:364.9,gdp:94.89,lang:"Swahili",pop:72.6,gov:"Republic",colors:["green", "yellow", "black", "blue"]},
-  {n:"Thailand",code:"THA",cont:"Asia",area:198.117,gdp:580.0,lang:"Thai",pop:71.6,gov:"Const. monarchy",colors:["red", "white", "blue"]},
-  {n:"Togo",code:"TGO",cont:"Africa",area:21.925,gdp:13.44,lang:"French",pop:9.9,gov:"Republic",colors:["green", "yellow", "red", "white"]},
-  {n:"Tonga",code:"TON",cont:"Oceania",area:0.288,gdp:0.72,lang:"English",pop:0.103,gov:"Const. monarchy",colors:["red", "white"]},
-  {n:"Trinidad and Tobago",code:"TTO",cont:"North America",area:1.981,gdp:26.84,lang:"English",pop:1.5,gov:"Republic",colors:["red", "white", "black"]},
-  {n:"Tunisia",code:"TUN",cont:"Africa",area:63.17,gdp:60.74,lang:"Arabic",pop:12.4,gov:"Republic",colors:["red", "white"]},
-  {n:"Turkey",code:"TUR",cont:"Asia",area:302.535,gdp:1640.22,lang:"Turkish",pop:87.9,gov:"Republic",colors:["red", "white"]},
-  {n:"Turkmenistan",code:"TKM",cont:"Asia",area:188.456,gdp:83.06,lang:"Turkmen",pop:7.7,gov:"Republic",colors:["green", "white", "red"]},
-  {n:"Tuvalu",code:"TUV",cont:"Oceania",area:0.01,gdp:0.07,lang:"Tuvaluan",pop:0.009,gov:"Const. monarchy",colors:["blue", "yellow", "white", "red"]},
-  {n:"Uganda",code:"UGA",cont:"Africa",area:93.263,gdp:73.37,lang:"English",pop:52.8,gov:"Republic",colors:["black", "yellow", "red", "white"]},
-  {n:"Ukraine",code:"UKR",cont:"Europe",area:233.013,gdp:225.34,lang:"Ukrainian",pop:39.5,gov:"Republic",colors:["blue", "yellow"]},
-  {n:"United Arab Emirates",code:"ARE",cont:"Asia",area:32.278,gdp:621.55,lang:"Arabic",pop:11.6,gov:"Const. monarchy",colors:["green", "white", "black", "red"]},
-  {n:"United Kingdom",code:"GBR",cont:"Europe",area:93.784,gdp:4264.79,lang:"English",pop:69.9,gov:"Const. monarchy",colors:["blue", "white", "red"]},
-  {n:"United States",code:"USA",cont:"North America",area:3618.783,gdp:32383.92,lang:"English",pop:349.0,gov:"Republic",colors:["red", "white", "blue"]},
-  {n:"Uruguay",code:"URY",cont:"South America",area:69.898,gdp:96.09,lang:"Spanish",pop:3.4,gov:"Republic",colors:["blue", "white", "yellow"]},
-  {n:"Uzbekistan",code:"UZB",cont:"Asia",area:172.742,gdp:181.5,lang:"Uzbek",pop:37.7,gov:"Republic",colors:["blue", "white", "green", "red"]},
-  {n:"Vanuatu",code:"VUT",cont:"Oceania",area:4.706,gdp:1.4,lang:"Bislama",pop:0.3,gov:"Republic",colors:["black", "red", "green", "yellow"]},
-  {n:"Vatican City",code:"VAT",cont:"Europe",area:0.0002,gdp:0.02,lang:"Italian",pop:0.001,gov:"Absolute monarchy",colors:["yellow", "white"]},
-  {n:"Venezuela",code:"VEN",cont:"South America",area:353.841,gdp:111.3,lang:"Spanish",pop:28.6,gov:"Republic",colors:["yellow", "blue", "red", "white"]},
-  {n:"Vietnam",code:"VNM",cont:"Asia",area:127.882,gdp:527.27,lang:"Vietnamese",pop:102.2,gov:"One-party state",colors:["red", "yellow"]},
-  {n:"Yemen",code:"YEM",cont:"Asia",area:203.85,gdp:7.43,lang:"Arabic",pop:43.0,gov:"Republic",colors:["red", "white", "black"]},
-  {n:"Zambia",code:"ZMB",cont:"Africa",area:290.585,gdp:41.24,lang:"English",pop:22.5,gov:"Republic",colors:["green", "red", "black", "orange"]},
-  {n:"Zimbabwe",code:"ZWE",cont:"Africa",area:150.872,gdp:56.71,lang:"Shona",pop:17.27,gov:"Republic",colors:["green", "yellow", "red", "black", "white"]},
+  {n:"Afghanistan",code:"AFG",flag:"\ud83c\udde6\ud83c\uddeb",cont:"Asia",area:251.827,gdp:19.66,lang:"Persian",pop:45.0,gov:"Theocracy",colors:["white", "black", "red", "green"]},
+  {n:"Albania",code:"ALB",flag:"\ud83c\udde6\ud83c\uddf1",cont:"Europe",area:11.1,gdp:33.33,lang:"Albanian",pop:2.8,gov:"Republic",colors:["red", "black"]},
+  {n:"Algeria",code:"DZA",flag:"\ud83c\udde9\ud83c\uddff",cont:"Africa",area:919.595,gdp:317.17,lang:"Arabic",pop:48.0,gov:"Republic",colors:["green", "white", "red"]},
+  {n:"Andorra",code:"AND",flag:"\ud83c\udde6\ud83c\udde9",cont:"Europe",area:0.181,gdp:4.88,lang:"Catalan",pop:0.084,gov:"Const. monarchy",colors:["blue", "yellow", "red"]},
+  {n:"Angola",code:"AGO",flag:"\ud83c\udde6\ud83c\uddf4",cont:"Africa",area:481.353,gdp:152.35,lang:"Portuguese",pop:40.2,gov:"Republic",colors:["red", "black", "yellow"]},
+  {n:"Antigua and Barbuda",code:"ATG",flag:"\ud83c\udde6\ud83c\uddec",cont:"North America",area:0.171,gdp:2.38,lang:"English",pop:0.095,gov:"Const. monarchy",colors:["red", "white", "blue", "black", "yellow"]},
+  {n:"Argentina",code:"ARG",flag:"\ud83c\udde6\ud83c\uddf7",cont:"South America",area:1073.518,gdp:688.38,lang:"Spanish",pop:46.0,gov:"Republic",colors:["blue", "white", "yellow", "brown"]},
+  {n:"Armenia",code:"ARM",flag:"\ud83c\udde6\ud83c\uddf2",cont:"Asia",area:11.484,gdp:31.87,lang:"Armenian",pop:2.9,gov:"Republic",colors:["red", "blue", "yellow"]},
+  {n:"Australia",code:"AUS",flag:"\ud83c\udde6\ud83c\uddfa",cont:"Oceania",area:2969.906,gdp:2123.96,lang:"English",pop:27.2,gov:"Const. monarchy",colors:["blue", "white", "red"]},
+  {n:"Austria",code:"AUT",flag:"\ud83c\udde6\ud83c\uddf9",cont:"Europe",area:32.383,gdp:623.72,lang:"German",pop:9.1,gov:"Republic",colors:["red", "white"]},
+  {n:"Azerbaijan",code:"AZE",flag:"\ud83c\udde6\ud83c\uddff",cont:"Asia",area:33.436,gdp:78.37,lang:"Azerbaijani",pop:10.5,gov:"Republic",colors:["blue", "red", "green", "white"]},
+  {n:"Bahamas",code:"BHS",flag:"\ud83c\udde7\ud83c\uddf8",cont:"North America",area:5.383,gdp:17.04,lang:"English",pop:0.4,gov:"Const. monarchy",colors:["black", "yellow", "blue"]},
+  {n:"Bahrain",code:"BHR",flag:"\ud83c\udde7\ud83c\udded",cont:"Asia",area:0.295,gdp:48.85,lang:"Arabic",pop:1.7,gov:"Const. monarchy",colors:["white", "red"]},
+  {n:"Bangladesh",code:"BGD",flag:"\ud83c\udde7\ud83c\udde9",cont:"Asia",area:56.977,gdp:510.7,lang:"Bengali",pop:177.8,gov:"Republic",colors:["green", "red"]},
+  {n:"Barbados",code:"BRB",flag:"\ud83c\udde7\ud83c\udde7",cont:"North America",area:0.166,gdp:8.48,lang:"English",pop:0.28,gov:"Republic",colors:["blue", "yellow", "black"]},
+  {n:"Belarus",code:"BLR",flag:"\ud83c\udde7\ud83c\uddfe",cont:"Europe",area:80.155,gdp:102.04,lang:"Russian",pop:8.9,gov:"Republic",colors:["red", "green", "white"]},
+  {n:"Belgium",code:"BEL",flag:"\ud83c\udde7\ud83c\uddea",cont:"Europe",area:11.787,gdp:776.73,lang:"Dutch",pop:11.8,gov:"Const. monarchy",colors:["black", "yellow", "red"]},
+  {n:"Belize",code:"BLZ",flag:"\ud83c\udde7\ud83c\uddff",cont:"North America",area:8.867,gdp:3.45,lang:"English",pop:0.4,gov:"Const. monarchy",colors:["blue", "red", "white", "green", "brown"]},
+  {n:"Benin",code:"BEN",flag:"\ud83c\udde7\ud83c\uddef",cont:"Africa",area:43.484,gdp:27.79,lang:"French",pop:15.17,gov:"Republic",colors:["green", "yellow", "red"]},
+  {n:"Bhutan",code:"BTN",flag:"\ud83c\udde7\ud83c\uddf9",cont:"Asia",area:14.824,gdp:3.86,lang:"Dzongkha",pop:0.8,gov:"Const. monarchy",colors:["yellow", "orange", "white", "red"]},
+  {n:"Bolivia",code:"BOL",flag:"\ud83c\udde7\ud83c\uddf4",cont:"South America",area:424.164,gdp:80.74,lang:"Spanish",pop:12.7,gov:"Republic",colors:["red", "yellow", "green", "brown"]},
+  {n:"Bosnia and Herzegovina",code:"BIH",flag:"\ud83c\udde7\ud83c\udde6",cont:"Europe",area:19.772,gdp:36.77,lang:"Bosnian",pop:3.1,gov:"Republic",colors:["blue", "yellow", "white"]},
+  {n:"Botswana",code:"BWA",flag:"\ud83c\udde7\ud83c\uddfc",cont:"Africa",area:224.711,gdp:21.94,lang:"English",pop:2.6,gov:"Republic",colors:["blue", "white", "black"]},
+  {n:"Brazil",code:"BRA",flag:"\ud83c\udde7\ud83c\uddf7",cont:"South America",area:3287.955,gdp:2635.91,lang:"Portuguese",pop:213.6,gov:"Republic",colors:["green", "yellow", "blue", "white"]},
+  {n:"Brunei",code:"BRN",flag:"\ud83c\udde7\ud83c\uddf3",cont:"Asia",area:2.226,gdp:16.86,lang:"Malay",pop:0.5,gov:"Absolute monarchy",colors:["yellow", "white", "black", "red"]},
+  {n:"Bulgaria",code:"BGR",flag:"\ud83c\udde7\ud83c\uddec",cont:"Europe",area:42.811,gdp:148.12,lang:"Bulgarian",pop:6.7,gov:"Republic",colors:["white", "green", "red"]},
+  {n:"Burkina Faso",code:"BFA",flag:"\ud83c\udde7\ud83c\uddeb",cont:"Africa",area:105.393,gdp:32.51,lang:"French",pop:24.6,gov:"Republic",colors:["red", "green", "yellow"]},
+  {n:"Burundi",code:"BDI",flag:"\ud83c\udde7\ud83c\uddee",cont:"Africa",area:10.747,gdp:8.14,lang:"Kirundi",pop:14.73,gov:"Republic",colors:["red", "white", "green"]},
+  {n:"Cambodia",code:"KHM",flag:"\ud83c\uddf0\ud83c\udded",cont:"Asia",area:69.898,gdp:52.38,lang:"Khmer",pop:18.1,gov:"Const. monarchy",colors:["red", "blue", "white"]},
+  {n:"Cameroon",code:"CMR",flag:"\ud83c\udde8\ud83c\uddf2",cont:"Africa",area:183.569,gdp:65.14,lang:"French",pop:30.6,gov:"Republic",colors:["green", "red", "yellow"]},
+  {n:"Canada",code:"CAN",flag:"\ud83c\udde8\ud83c\udde6",cont:"North America",area:3855.101,gdp:2507.34,lang:"English",pop:40.5,gov:"Const. monarchy",colors:["red", "white"]},
+  {n:"Cape Verde",code:"CPV",flag:"\ud83c\udde8\ud83c\uddfb",cont:"Africa",area:1.557,gdp:3.45,lang:"Portuguese",pop:0.5,gov:"Republic",colors:["blue", "white", "red", "yellow"]},
+  {n:"Central African Republic",code:"CAF",flag:"\ud83c\udde8\ud83c\uddeb",cont:"Africa",area:240.535,gdp:3.49,lang:"French",pop:5.7,gov:"Republic",colors:["blue", "white", "green", "yellow", "red"]},
+  {n:"Chad",code:"TCD",flag:"\ud83c\uddf9\ud83c\udde9",cont:"Africa",area:495.755,gdp:25.63,lang:"French",pop:21.6,gov:"Republic",colors:["blue", "yellow", "red"]},
+  {n:"Chile",code:"CHL",flag:"\ud83c\udde8\ud83c\uddf1",cont:"South America",area:291.932,gdp:407.85,lang:"Spanish",pop:19.9,gov:"Republic",colors:["red", "white", "blue"]},
+  {n:"China",code:"CHN",flag:"\ud83c\udde8\ud83c\uddf3",cont:"Asia",area:3747.877,gdp:20851.59,lang:"Mandarin",pop:1412.9,gov:"One-party state",colors:["red", "yellow"]},
+  {n:"Colombia",code:"COL",flag:"\ud83c\udde8\ud83c\uddf4",cont:"South America",area:440.831,gdp:539.53,lang:"Spanish",pop:53.9,gov:"Republic",colors:["yellow", "blue", "red"]},
+  {n:"Comoros",code:"COM",flag:"\ud83c\uddf0\ud83c\uddf2",cont:"Africa",area:0.719,gdp:1.81,lang:"Comorian",pop:0.9,gov:"Republic",colors:["yellow", "white", "red", "blue", "green"]},
+  {n:"Costa Rica",code:"CRI",flag:"\ud83c\udde8\ud83c\uddf7",cont:"North America",area:19.73,gdp:109.93,lang:"Spanish",pop:5.2,gov:"Republic",colors:["blue", "white", "red", "yellow", "green"]},
+  {n:"Croatia",code:"HRV",flag:"\ud83c\udded\ud83c\uddf7",cont:"Europe",area:21.851,gdp:116.57,lang:"Croatian",pop:3.8,gov:"Republic",colors:["red", "white", "blue", "yellow"]},
+  {n:"Cuba",code:"CUB",flag:"\ud83c\udde8\ud83c\uddfa",cont:"North America",area:42.426,gdp:201.99,lang:"Spanish",pop:10.9,gov:"One-party state",colors:["blue", "white", "red"]},
+  {n:"Cyprus",code:"CYP",flag:"\ud83c\udde8\ud83c\uddfe",cont:"Asia",area:3.572,gdp:45.17,lang:"Greek",pop:1.4,gov:"Republic",colors:["white", "yellow", "green"]},
+  {n:"Czech Republic",code:"CZE",flag:"\ud83c\udde8\ud83c\uddff",cont:"Europe",area:30.45,gdp:432.6,lang:"Czech",pop:10.53,gov:"Republic",colors:["white", "red", "blue"]},
+  {n:"Democratic Republic of the Congo",code:"COD",flag:"\ud83c\udde8\ud83c\udde9",cont:"Africa",area:905.354,gdp:123.41,lang:"French",pop:116.5,gov:"Republic",colors:["blue", "yellow", "red"]},
+  {n:"Denmark",code:"DNK",flag:"\ud83c\udde9\ud83c\uddf0",cont:"Europe",area:16.639,gdp:503.77,lang:"Danish",pop:6.0,gov:"Const. monarchy",colors:["red", "white"]},
+  {n:"Djibouti",code:"DJI",flag:"\ud83c\udde9\ud83c\uddef",cont:"Africa",area:8.958,gdp:4.72,lang:"Arabic",pop:1.2,gov:"Republic",colors:["white", "blue", "green", "red"]},
+  {n:"Dominica",code:"DMA",flag:"\ud83c\udde9\ud83c\uddf2",cont:"North America",area:0.29,gdp:0.79,lang:"English",pop:0.066,gov:"Republic",colors:["green", "yellow", "black", "white", "red", "purple"]},
+  {n:"Dominican Republic",code:"DOM",flag:"\ud83c\udde9\ud83c\uddf4",cont:"North America",area:18.792,gdp:136.15,lang:"Spanish",pop:11.6,gov:"Republic",colors:["blue", "red", "white", "green", "yellow"]},
+  {n:"East Timor",code:"TLS",flag:"\ud83c\uddf9\ud83c\uddf1",cont:"Asia",area:5.743,gdp:2.17,lang:"Tetum",pop:1.4,gov:"Republic",colors:["red", "yellow", "black", "white"]},
+  {n:"Ecuador",code:"ECU",flag:"\ud83c\uddea\ud83c\udde8",cont:"South America",area:106.889,gdp:138.19,lang:"Spanish",pop:18.44,gov:"Republic",colors:["yellow", "blue", "red", "brown", "green"]},
+  {n:"Egypt",code:"EGY",flag:"\ud83c\uddea\ud83c\uddec",cont:"Africa",area:387.048,gdp:429.64,lang:"Arabic",pop:120.1,gov:"Republic",colors:["red", "white", "black", "yellow"]},
+  {n:"El Salvador",code:"SLV",flag:"\ud83c\uddf8\ud83c\uddfb",cont:"North America",area:8.124,gdp:39.84,lang:"Spanish",pop:6.4,gov:"Republic",colors:["blue", "white", "yellow", "green"]},
+  {n:"Equatorial Guinea",code:"GNQ",flag:"\ud83c\uddec\ud83c\uddf6",cont:"Africa",area:10.831,gdp:13.72,lang:"Spanish",pop:2.0,gov:"Republic",colors:["green", "white", "red", "blue", "brown", "grey"]},
+  {n:"Eritrea",code:"ERI",flag:"\ud83c\uddea\ud83c\uddf7",cont:"Africa",area:45.406,gdp:2.28,lang:"Tigrinya",pop:3.7,gov:"One-party state",colors:["green", "red", "blue", "yellow"]},
+  {n:"Estonia",code:"EST",flag:"\ud83c\uddea\ud83c\uddea",cont:"Europe",area:17.462,gdp:51.63,lang:"Estonian",pop:1.3,gov:"Republic",colors:["blue", "black", "white"]},
+  {n:"Eswatini",code:"SWZ",flag:"\ud83c\uddf8\ud83c\uddff",cont:"Africa",area:6.704,gdp:5.79,lang:"Swazi",pop:1.3,gov:"Absolute monarchy",colors:["blue", "yellow", "red", "white", "black"]},
+  {n:"Ethiopia",code:"ETH",flag:"\ud83c\uddea\ud83c\uddf9",cont:"Africa",area:426.372,gdp:121.53,lang:"Amharic",pop:138.9,gov:"Republic",colors:["green", "yellow", "red", "blue"]},
+  {n:"Federated States of Micronesia",code:"FSM",flag:"\ud83c\uddeb\ud83c\uddf2",cont:"Oceania",area:0.271,gdp:0.52,lang:"English",pop:0.1,gov:"Republic",colors:["blue", "white"]},
+  {n:"Fiji",code:"FJI",flag:"\ud83c\uddeb\ud83c\uddef",cont:"Oceania",area:7.055,gdp:6.35,lang:"English",pop:0.9,gov:"Republic",colors:["blue", "white", "red", "yellow", "brown"]},
+  {n:"Finland",code:"FIN",flag:"\ud83c\uddeb\ud83c\uddee",cont:"Europe",area:130.666,gdp:337.67,lang:"Finnish",pop:5.6,gov:"Republic",colors:["white", "blue"]},
+  {n:"France",code:"FRA",flag:"\ud83c\uddeb\ud83c\uddf7",cont:"Europe",area:213.011,gdp:3596.09,lang:"French",pop:66.7,gov:"Republic",colors:["blue", "white", "red"]},
+  {n:"Gabon",code:"GAB",flag:"\ud83c\uddec\ud83c\udde6",cont:"Africa",area:103.347,gdp:23.36,lang:"French",pop:2.6,gov:"Republic",colors:["green", "yellow", "blue"]},
+  {n:"Gambia",code:"GMB",flag:"\ud83c\uddec\ud83c\uddf2",cont:"Africa",area:4.127,gdp:2.79,lang:"English",pop:2.9,gov:"Republic",colors:["red", "blue", "green", "white"]},
+  {n:"Georgia",code:"GEO",flag:"\ud83c\uddec\ud83c\uddea",cont:"Asia",area:26.911,gdp:42.72,lang:"Georgian",pop:3.8,gov:"Republic",colors:["white", "red"]},
+  {n:"Germany",code:"DEU",flag:"\ud83c\udde9\ud83c\uddea",cont:"Europe",area:137.882,gdp:5452.86,lang:"German",pop:83.6,gov:"Republic",colors:["black", "red", "yellow"]},
+  {n:"Ghana",code:"GHA",flag:"\ud83c\uddec\ud83c\udded",cont:"Africa",area:92.098,gdp:118.29,lang:"English",pop:35.7,gov:"Republic",colors:["red", "yellow", "green", "black"]},
+  {n:"Greece",code:"GRC",flag:"\ud83c\uddec\ud83c\uddf7",cont:"Europe",area:50.962,gdp:307.55,lang:"Greek",pop:9.9,gov:"Republic",colors:["blue", "white"]},
+  {n:"Grenada",code:"GRD",flag:"\ud83c\uddec\ud83c\udde9",cont:"North America",area:0.133,gdp:1.48,lang:"English",pop:0.117,gov:"Const. monarchy",colors:["red", "yellow", "green"]},
+  {n:"Guatemala",code:"GTM",flag:"\ud83c\uddec\ud83c\uddf9",cont:"North America",area:42.042,gdp:128.89,lang:"Spanish",pop:19.0,gov:"Republic",colors:["blue", "white", "green", "brown"]},
+  {n:"Guinea",code:"GIN",flag:"\ud83c\uddec\ud83c\uddf3",cont:"Africa",area:94.926,gdp:29.93,lang:"French",pop:15.44,gov:"Republic",colors:["red", "yellow", "green"]},
+  {n:"Guinea-Bissau",code:"GNB",flag:"\ud83c\uddec\ud83c\uddfc",cont:"Africa",area:13.948,gdp:2.98,lang:"Portuguese",pop:2.3,gov:"Republic",colors:["red", "yellow", "green", "black"]},
+  {n:"Guyana",code:"GUY",flag:"\ud83c\uddec\ud83c\uddfe",cont:"South America",area:83.0,gdp:33.96,lang:"English",pop:0.8,gov:"Republic",colors:["green", "white", "yellow", "red", "black"]},
+  {n:"Haiti",code:"HTI",flag:"\ud83c\udded\ud83c\uddf9",cont:"North America",area:10.714,gdp:39.18,lang:"Haitian Creole",pop:12.04,gov:"Republic",colors:["blue", "red", "white", "green", "yellow"]},
+  {n:"Honduras",code:"HND",flag:"\ud83c\udded\ud83c\uddf3",cont:"North America",area:43.433,gdp:41.51,lang:"Spanish",pop:11.2,gov:"Republic",colors:["blue", "white", "green"]},
+  {n:"Hungary",code:"HUN",flag:"\ud83c\udded\ud83c\uddfa",cont:"Europe",area:35.918,gdp:271.12,lang:"Hungarian",pop:9.6,gov:"Republic",colors:["red", "white", "green"]},
+  {n:"Iceland",code:"ISL",flag:"\ud83c\uddee\ud83c\uddf8",cont:"Europe",area:39.769,gdp:43.8,lang:"Icelandic",pop:0.4,gov:"Republic",colors:["blue", "white", "red"]},
+  {n:"India",code:"IND",flag:"\ud83c\uddee\ud83c\uddf3",cont:"Asia",area:1269.345,gdp:4153.19,lang:"Hindi",pop:1476.6,gov:"Republic",colors:["orange", "white", "green", "blue"]},
+  {n:"Indonesia",code:"IDN",flag:"\ud83c\uddee\ud83c\udde9",cont:"Asia",area:735.358,gdp:1539.87,lang:"Indonesian",pop:287.9,gov:"Republic",colors:["red", "white"]},
+  {n:"Iran",code:"IRN",flag:"\ud83c\uddee\ud83c\uddf7",cont:"Asia",area:636.371,gdp:300.29,lang:"Persian",pop:93.2,gov:"Theocracy",colors:["green", "white", "red"]},
+  {n:"Iraq",code:"IRQ",flag:"\ud83c\uddee\ud83c\uddf6",cont:"Asia",area:169.235,gdp:264.78,lang:"Arabic",pop:48.0,gov:"Republic",colors:["red", "white", "black", "green"]},
+  {n:"Ireland",code:"IRL",flag:"\ud83c\uddee\ud83c\uddea",cont:"Europe",area:27.133,gdp:779.38,lang:"English",pop:5.4,gov:"Republic",colors:["green", "white", "orange"]},
+  {n:"Israel",code:"ISR",flag:"\ud83c\uddee\ud83c\uddf1",cont:"Asia",area:8.019,gdp:719.85,lang:"Hebrew",pop:9.6,gov:"Republic",colors:["blue", "white"]},
+  {n:"Italy",code:"ITA",flag:"\ud83c\uddee\ud83c\uddf9",cont:"Europe",area:116.346,gdp:2738.16,lang:"Italian",pop:58.9,gov:"Republic",colors:["green", "white", "red"]},
+  {n:"Ivory Coast",code:"CIV",flag:"\ud83c\udde8\ud83c\uddee",cont:"Africa",area:124.504,gdp:112.11,lang:"French",pop:33.5,gov:"Republic",colors:["orange", "white", "green"]},
+  {n:"Jamaica",code:"JAM",flag:"\ud83c\uddef\ud83c\uddf2",cont:"North America",area:4.244,gdp:23.03,lang:"English",pop:2.8,gov:"Const. monarchy",colors:["green", "yellow", "black"]},
+  {n:"Japan",code:"JPN",flag:"\ud83c\uddef\ud83c\uddf5",cont:"Asia",area:145.92,gdp:4379.25,lang:"Japanese",pop:122.4,gov:"Const. monarchy",colors:["white", "red"]},
+  {n:"Jordan",code:"JOR",flag:"\ud83c\uddef\ud83c\uddf4",cont:"Asia",area:34.495,gdp:64.91,lang:"Arabic",pop:11.6,gov:"Const. monarchy",colors:["black", "white", "red", "green"]},
+  {n:"Kazakhstan",code:"KAZ",flag:"\ud83c\uddf0\ud83c\uddff",cont:"Asia",area:1052.089,gdp:360.46,lang:"Kazakh",pop:21.1,gov:"Republic",colors:["blue", "yellow"]},
+  {n:"Kenya",code:"KEN",flag:"\ud83c\uddf0\ud83c\uddea",cont:"Africa",area:224.081,gdp:147.26,lang:"Swahili",pop:58.6,gov:"Republic",colors:["black", "red", "green", "white"]},
+  {n:"Kiribati",code:"KIR",flag:"\ud83c\uddf0\ud83c\uddee",cont:"Oceania",area:0.313,gdp:0.4,lang:"English",pop:0.138,gov:"Republic",colors:["red", "white", "blue", "yellow"]},
+  {n:"Kuwait",code:"KWT",flag:"\ud83c\uddf0\ud83c\uddfc",cont:"Asia",area:6.88,gdp:172.92,lang:"Arabic",pop:5.1,gov:"Const. monarchy",colors:["green", "white", "red", "black"]},
+  {n:"Kyrgyzstan",code:"KGZ",flag:"\ud83c\uddf0\ud83c\uddec",cont:"Asia",area:77.201,gdp:23.61,lang:"Kyrgyz",pop:7.4,gov:"Republic",colors:["red", "yellow"]},
+  {n:"Laos",code:"LAO",flag:"\ud83c\uddf1\ud83c\udde6",cont:"Asia",area:91.429,gdp:18.96,lang:"Lao",pop:8.0,gov:"One-party state",colors:["red", "blue", "white"]},
+  {n:"Latvia",code:"LVA",flag:"\ud83c\uddf1\ud83c\uddfb",cont:"Europe",area:24.926,gdp:53.69,lang:"Latvian",pop:1.8,gov:"Republic",colors:["red", "white"]},
+  {n:"Lebanon",code:"LBN",flag:"\ud83c\uddf1\ud83c\udde7",cont:"Asia",area:4.036,gdp:34.5,lang:"Arabic",pop:5.9,gov:"Republic",colors:["red", "white", "green"]},
+  {n:"Lesotho",code:"LSO",flag:"\ud83c\uddf1\ud83c\uddf8",cont:"Africa",area:11.72,gdp:2.97,lang:"Sotho",pop:2.4,gov:"Const. monarchy",colors:["blue", "white", "green", "black"]},
+  {n:"Liberia",code:"LBR",flag:"\ud83c\uddf1\ud83c\uddf7",cont:"Africa",area:43.0,gdp:5.64,lang:"English",pop:5.9,gov:"Republic",colors:["red", "white", "blue"]},
+  {n:"Libya",code:"LBY",flag:"\ud83c\uddf1\ud83c\uddfe",cont:"Africa",area:679.362,gdp:52.45,lang:"Arabic",pop:7.5,gov:"Republic",colors:["red", "black", "green"]},
+  {n:"Liechtenstein",code:"LIE",flag:"\ud83c\uddf1\ud83c\uddee",cont:"Europe",area:0.062,gdp:9.44,lang:"German",pop:0.04,gov:"Const. monarchy",colors:["blue", "red", "yellow", "black"]},
+  {n:"Lithuania",code:"LTU",flag:"\ud83c\uddf1\ud83c\uddf9",cont:"Europe",area:25.212,gdp:105.91,lang:"Lithuanian",pop:2.8,gov:"Republic",colors:["yellow", "green", "red"]},
+  {n:"Luxembourg",code:"LUX",flag:"\ud83c\uddf1\ud83c\uddfa",cont:"Europe",area:0.998,gdp:110.42,lang:"Luxembourgish",pop:0.7,gov:"Const. monarchy",colors:["red", "white", "blue"]},
+  {n:"Madagascar",code:"MDG",flag:"\ud83c\uddf2\ud83c\uddec",cont:"Africa",area:226.658,gdp:21.18,lang:"Malagasy",pop:33.5,gov:"Republic",colors:["white", "red", "green"]},
+  {n:"Malawi",code:"MWI",flag:"\ud83c\uddf2\ud83c\uddfc",cont:"Africa",area:45.747,gdp:18.15,lang:"English",pop:22.8,gov:"Republic",colors:["black", "red", "green", "white"]},
+  {n:"Malaysia",code:"MYS",flag:"\ud83c\uddf2\ud83c\uddfe",cont:"Asia",area:127.724,gdp:516.43,lang:"Malay",pop:36.4,gov:"Const. monarchy",colors:["red", "white", "blue", "yellow"]},
+  {n:"Maldives",code:"MDV",flag:"\ud83c\uddf2\ud83c\uddfb",cont:"Asia",area:0.116,gdp:8.13,lang:"Dhivehi",pop:0.5,gov:"Republic",colors:["red", "green", "white"]},
+  {n:"Mali",code:"MLI",flag:"\ud83c\uddf2\ud83c\uddf1",cont:"Africa",area:478.841,gdp:33.85,lang:"French",pop:25.9,gov:"Republic",colors:["green", "yellow", "red"]},
+  {n:"Malta",code:"MLT",flag:"\ud83c\uddf2\ud83c\uddf9",cont:"Europe",area:0.122,gdp:30.71,lang:"Maltese",pop:0.5,gov:"Republic",colors:["white", "red"]},
+  {n:"Marshall Islands",code:"MHL",flag:"\ud83c\uddf2\ud83c\udded",cont:"Oceania",area:0.07,gdp:0.34,lang:"English",pop:0.035,gov:"Republic",colors:["blue", "white", "orange"]},
+  {n:"Mauritania",code:"MRT",flag:"\ud83c\uddf2\ud83c\uddf7",cont:"Africa",area:397.955,gdp:14.35,lang:"Arabic",pop:5.5,gov:"Republic",colors:["green", "yellow", "red"]},
+  {n:"Mauritius",code:"MUS",flag:"\ud83c\uddf2\ud83c\uddfa",cont:"Africa",area:0.788,gdp:17.12,lang:"English",pop:1.3,gov:"Republic",colors:["red", "blue", "yellow", "green"]},
+  {n:"Mexico",code:"MEX",flag:"\ud83c\uddf2\ud83c\uddfd",cont:"North America",area:758.449,gdp:2120.86,lang:"Spanish",pop:133.0,gov:"Republic",colors:["green", "white", "red", "brown"]},
+  {n:"Moldova",code:"MDA",flag:"\ud83c\uddf2\ud83c\udde9",cont:"Europe",area:13.068,gdp:21.89,lang:"Romanian",pop:3.0,gov:"Republic",colors:["blue", "yellow", "red", "brown"]},
+  {n:"Monaco",code:"MCO",flag:"\ud83c\uddf2\ud83c\udde8",cont:"Europe",area:0.001,gdp:10.0,lang:"French",pop:0.038,gov:"Const. monarchy",colors:["red", "white"]},
+  {n:"Mongolia",code:"MNG",flag:"\ud83c\uddf2\ud83c\uddf3",cont:"Asia",area:603.906,gdp:28.45,lang:"Mongolian",pop:3.6,gov:"Republic",colors:["red", "blue", "yellow"]},
+  {n:"Montenegro",code:"MNE",flag:"\ud83c\uddf2\ud83c\uddea",cont:"Europe",area:5.333,gdp:10.23,lang:"Montenegrin",pop:0.6,gov:"Republic",colors:["red", "yellow", "blue"]},
+  {n:"Morocco",code:"MAR",flag:"\ud83c\uddf2\ud83c\udde6",cont:"Africa",area:172.414,gdp:194.33,lang:"Arabic",pop:38.8,gov:"Const. monarchy",colors:["red", "green"]},
+  {n:"Mozambique",code:"MOZ",flag:"\ud83c\uddf2\ud83c\uddff",cont:"Africa",area:309.496,gdp:23.27,lang:"Portuguese",pop:36.6,gov:"Republic",colors:["green", "black", "yellow", "white", "red"]},
+  {n:"Myanmar",code:"MMR",flag:"\ud83c\uddf2\ud83c\uddf2",cont:"Asia",area:261.228,gdp:83.83,lang:"Burmese",pop:55.2,gov:"Republic",colors:["yellow", "green", "red", "white"]},
+  {n:"Namibia",code:"NAM",flag:"\ud83c\uddf3\ud83c\udde6",cont:"Africa",area:318.772,gdp:17.31,lang:"English",pop:3.2,gov:"Republic",colors:["blue", "red", "green", "white", "yellow"]},
+  {n:"Nauru",code:"NRU",flag:"\ud83c\uddf3\ud83c\uddf7",cont:"Oceania",area:0.008,gdp:0.2,lang:"English",pop:0.012,gov:"Republic",colors:["blue", "yellow", "white"]},
+  {n:"Nepal",code:"NPL",flag:"\ud83c\uddf3\ud83c\uddf5",cont:"Asia",area:56.827,gdp:45.84,lang:"Nepali",pop:29.6,gov:"Republic",colors:["red", "blue", "white"]},
+  {n:"Netherlands",code:"NLD",flag:"\ud83c\uddf3\ud83c\uddf1",cont:"Europe",area:16.158,gdp:1449.7,lang:"Dutch",pop:18.4,gov:"Const. monarchy",colors:["red", "white", "blue"]},
+  {n:"New Zealand",code:"NZL",flag:"\ud83c\uddf3\ud83c\uddff",cont:"Oceania",area:104.428,gdp:278.64,lang:"English",pop:5.3,gov:"Const. monarchy",colors:["blue", "red", "white"]},
+  {n:"Nicaragua",code:"NIC",flag:"\ud83c\uddf3\ud83c\uddee",cont:"North America",area:50.337,gdp:24.23,lang:"Spanish",pop:7.1,gov:"Republic",colors:["blue", "white", "yellow", "green"]},
+  {n:"Niger",code:"NER",flag:"\ud83c\uddf3\ud83c\uddea",cont:"Africa",area:489.191,gdp:24.81,lang:"Hausa",pop:28.8,gov:"Republic",colors:["orange", "white", "green"]},
+  {n:"Nigeria",code:"NGA",flag:"\ud83c\uddf3\ud83c\uddec",cont:"Africa",area:356.669,gdp:377.37,lang:"English",pop:242.4,gov:"Republic",colors:["green", "white"]},
+  {n:"North Korea",code:"PRK",flag:"\ud83c\uddf0\ud83c\uddf5",cont:"Asia",area:46.54,gdp:16.45,lang:"Korean",pop:26.6,gov:"One-party state",colors:["blue", "red", "white"]},
+  {n:"North Macedonia",code:"MKD",flag:"\ud83c\uddf2\ud83c\uddf0",cont:"Europe",area:9.928,gdp:21.61,lang:"Macedonian",pop:1.8,gov:"Republic",colors:["red", "yellow"]},
+  {n:"Norway",code:"NOR",flag:"\ud83c\uddf3\ud83c\uddf4",cont:"Europe",area:125.021,gdp:599.41,lang:"Norwegian",pop:5.7,gov:"Const. monarchy",colors:["red", "white", "blue"]},
+  {n:"Oman",code:"OMN",flag:"\ud83c\uddf4\ud83c\uddf2",cont:"Asia",area:119.499,gdp:117.18,lang:"Arabic",pop:5.7,gov:"Absolute monarchy",colors:["red", "white", "green"]},
+  {n:"Pakistan",code:"PAK",flag:"\ud83c\uddf5\ud83c\uddf0",cont:"Asia",area:340.508,gdp:407.79,lang:"Urdu",pop:259.3,gov:"Republic",colors:["green", "white"]},
+  {n:"Palau",code:"PLW",flag:"\ud83c\uddf5\ud83c\uddfc",cont:"Oceania",area:0.177,gdp:0.38,lang:"English",pop:0.018,gov:"Republic",colors:["blue", "yellow"]},
+  {n:"Palestine",code:"PSE",flag:"\ud83c\uddf5\ud83c\uddf8",cont:"Asia",area:2.402,gdp:13.71,lang:"Arabic",pop:5.7,gov:"Republic",colors:["black", "white", "green", "red"]},
+  {n:"Panama",code:"PAN",flag:"\ud83c\uddf5\ud83c\udde6",cont:"North America",area:29.119,gdp:95.02,lang:"Spanish",pop:4.6,gov:"Republic",colors:["red", "white", "blue"]},
+  {n:"Papua New Guinea",code:"PNG",flag:"\ud83c\uddf5\ud83c\uddec",cont:"Oceania",area:178.703,gdp:34.4,lang:"English",pop:10.9,gov:"Const. monarchy",colors:["red", "black", "yellow", "white"]},
+  {n:"Paraguay",code:"PRY",flag:"\ud83c\uddf5\ud83c\uddfe",cont:"South America",area:157.048,gdp:60.54,lang:"Spanish",pop:7.1,gov:"Republic",colors:["red", "white", "blue", "yellow", "green"]},
+  {n:"Peru",code:"PER",flag:"\ud83c\uddf5\ud83c\uddea",cont:"South America",area:496.224,gdp:380.9,lang:"Spanish",pop:34.9,gov:"Republic",colors:["red", "white", "green", "yellow", "brown"]},
+  {n:"Philippines",code:"PHL",flag:"\ud83c\uddf5\ud83c\udded",cont:"Asia",area:132.183,gdp:512.22,lang:"Filipino",pop:117.7,gov:"Republic",colors:["blue", "red", "white", "yellow", "brown"]},
+  {n:"Poland",code:"POL",flag:"\ud83c\uddf5\ud83c\uddf1",cont:"Europe",area:120.726,gdp:1134.25,lang:"Polish",pop:37.8,gov:"Republic",colors:["white", "red"]},
+  {n:"Portugal",code:"PRT",flag:"\ud83c\uddf5\ud83c\uddf9",cont:"Europe",area:35.556,gdp:380.64,lang:"Portuguese",pop:10.4,gov:"Republic",colors:["green", "red", "white", "yellow", "blue"]},
+  {n:"Qatar",code:"QAT",flag:"\ud83c\uddf6\ud83c\udde6",cont:"Asia",area:4.473,gdp:217.42,lang:"Arabic",pop:3.2,gov:"Const. monarchy",colors:["red", "white"]},
+  {n:"Republic of the Congo",code:"COG",flag:"\ud83c\udde8\ud83c\uddec",cont:"Africa",area:132.047,gdp:17.03,lang:"French",pop:6.6,gov:"Republic",colors:["green", "yellow", "red"]},
+  {n:"Romania",code:"ROU",flag:"\ud83c\uddf7\ud83c\uddf4",cont:"Europe",area:92.043,gdp:480.83,lang:"Romanian",pop:18.8,gov:"Republic",colors:["blue", "yellow", "red"]},
+  {n:"Russia",code:"RUS",flag:"\ud83c\uddf7\ud83c\uddfa",cont:"Europe",area:6601.665,gdp:2656.45,lang:"Russian",pop:143.4,gov:"Republic",colors:["white", "blue", "red"]},
+  {n:"Rwanda",code:"RWA",flag:"\ud83c\uddf7\ud83c\uddfc",cont:"Africa",area:10.169,gdp:17.34,lang:"Kinyarwanda",pop:14.89,gov:"Republic",colors:["blue", "yellow", "green"]},
+  {n:"Saint Kitts and Nevis",code:"KNA",flag:"\ud83c\uddf0\ud83c\uddf3",cont:"North America",area:0.101,gdp:1.14,lang:"English",pop:0.047,gov:"Const. monarchy",colors:["green", "yellow", "red", "black", "white"]},
+  {n:"Saint Lucia",code:"LCA",flag:"\ud83c\uddf1\ud83c\udde8",cont:"North America",area:0.238,gdp:2.77,lang:"English",pop:0.2,gov:"Const. monarchy",colors:["blue", "yellow", "black", "white"]},
+  {n:"Saint Vincent and the Grenadines",code:"VCT",flag:"\ud83c\uddfb\ud83c\udde8",cont:"North America",area:0.15,gdp:1.24,lang:"English",pop:0.099,gov:"Const. monarchy",colors:["blue", "yellow", "green"]},
+  {n:"Samoa",code:"WSM",flag:"\ud83c\uddfc\ud83c\uddf8",cont:"Oceania",area:1.097,gdp:1.38,lang:"Samoan",pop:0.2,gov:"Republic",colors:["red", "blue", "white"]},
+  {n:"San Marino",code:"SMR",flag:"\ud83c\uddf8\ud83c\uddf2",cont:"Europe",area:0.024,gdp:2.42,lang:"Italian",pop:0.034,gov:"Republic",colors:["white", "blue", "yellow", "green"]},
+  {n:"Sao Tome and Principe",code:"STP",flag:"\ud83c\uddf8\ud83c\uddf9",cont:"Africa",area:0.372,gdp:1.16,lang:"Portuguese",pop:0.2,gov:"Republic",colors:["green", "yellow", "red", "black"]},
+  {n:"Saudi Arabia",code:"SAU",flag:"\ud83c\uddf8\ud83c\udde6",cont:"Asia",area:830.0,gdp:1388.68,lang:"Arabic",pop:35.2,gov:"Absolute monarchy",colors:["green", "white"]},
+  {n:"Senegal",code:"SEN",flag:"\ud83c\uddf8\ud83c\uddf3",cont:"Africa",area:75.955,gdp:40.47,lang:"French",pop:19.4,gov:"Republic",colors:["green", "yellow", "red"]},
+  {n:"Serbia",code:"SRB",flag:"\ud83c\uddf7\ud83c\uddf8",cont:"Europe",area:34.116,gdp:112.03,lang:"Serbian",pop:6.6,gov:"Republic",colors:["red", "blue", "white", "yellow"]},
+  {n:"Seychelles",code:"SYC",flag:"\ud83c\uddf8\ud83c\udde8",cont:"Africa",area:0.175,gdp:2.25,lang:"Seychellois Creole",pop:0.135,gov:"Republic",colors:["blue", "yellow", "red", "white", "green"]},
+  {n:"Sierra Leone",code:"SLE",flag:"\ud83c\uddf8\ud83c\uddf1",cont:"Africa",area:27.699,gdp:8.27,lang:"English",pop:9.0,gov:"Republic",colors:["green", "white", "blue"]},
+  {n:"Singapore",code:"SGP",flag:"\ud83c\uddf8\ud83c\uddec",cont:"Asia",area:0.274,gdp:659.57,lang:"English",pop:5.9,gov:"Republic",colors:["red", "white"]},
+  {n:"Slovakia",code:"SVK",flag:"\ud83c\uddf8\ud83c\uddf0",cont:"Europe",area:18.933,gdp:168.9,lang:"Slovak",pop:5.5,gov:"Republic",colors:["white", "blue", "red", "yellow"]},
+  {n:"Slovenia",code:"SVN",flag:"\ud83c\uddf8\ud83c\uddee",cont:"Europe",area:7.827,gdp:86.73,lang:"Slovene",pop:2.1,gov:"Republic",colors:["white", "blue", "red", "yellow"]},
+  {n:"Solomon Islands",code:"SLB",flag:"\ud83c\uddf8\ud83c\udde7",cont:"Oceania",area:11.157,gdp:1.84,lang:"English",pop:0.9,gov:"Const. monarchy",colors:["blue", "yellow", "green", "white"]},
+  {n:"Somalia",code:"SOM",flag:"\ud83c\uddf8\ud83c\uddf4",cont:"Africa",area:246.201,gdp:14.17,lang:"Somali",pop:20.3,gov:"Republic",colors:["blue", "white"]},
+  {n:"South Africa",code:"ZAF",flag:"\ud83c\uddff\ud83c\udde6",cont:"Africa",area:471.445,gdp:479.96,lang:"Zulu",pop:65.5,gov:"Republic",colors:["red", "white", "blue", "green", "yellow", "black"]},
+  {n:"South Korea",code:"KOR",flag:"\ud83c\uddf0\ud83c\uddf7",cont:"Asia",area:38.691,gdp:1931.01,lang:"Korean",pop:51.6,gov:"Republic",colors:["white", "red", "blue", "black"]},
+  {n:"South Sudan",code:"SSD",flag:"\ud83c\uddf8\ud83c\uddf8",cont:"Africa",area:239.285,gdp:6.07,lang:"English",pop:12.44,gov:"Republic",colors:["black", "red", "green", "white", "blue", "yellow"]},
+  {n:"Spain",code:"ESP",flag:"\ud83c\uddea\ud83c\uddf8",cont:"Europe",area:195.365,gdp:2091.22,lang:"Spanish",pop:47.9,gov:"Const. monarchy",colors:["red", "yellow", "blue", "purple"]},
+  {n:"Sri Lanka",code:"LKA",flag:"\ud83c\uddf1\ud83c\uddf0",cont:"Asia",area:25.332,gdp:98.96,lang:"Sinhala",pop:23.3,gov:"Republic",colors:["yellow", "red", "green", "orange"]},
+  {n:"Sudan",code:"SDN",flag:"\ud83c\uddf8\ud83c\udde9",cont:"Africa",area:728.215,gdp:44.69,lang:"Arabic",pop:53.3,gov:"Republic",colors:["red", "white", "black", "green"]},
+  {n:"Suriname",code:"SUR",flag:"\ud83c\uddf8\ud83c\uddf7",cont:"South America",area:63.251,gdp:5.91,lang:"Dutch",pop:0.6,gov:"Republic",colors:["green", "white", "red", "yellow"]},
+  {n:"Sweden",code:"SWE",flag:"\ud83c\uddf8\ud83c\uddea",cont:"Europe",area:173.86,gdp:760.48,lang:"Swedish",pop:10.7,gov:"Const. monarchy",colors:["blue", "yellow"]},
+  {n:"Switzerland",code:"CHE",flag:"\ud83c\udde8\ud83c\udded",cont:"Europe",area:15.94,gdp:1146.91,lang:"German",pop:9.0,gov:"Republic",colors:["red", "white"]},
+  {n:"Syria",code:"SYR",flag:"\ud83c\uddf8\ud83c\uddfe",cont:"Asia",area:71.498,gdp:19.99,lang:"Arabic",pop:26.5,gov:"Republic",colors:["green", "white", "black", "red"]},
+  {n:"Tajikistan",code:"TJK",flag:"\ud83c\uddf9\ud83c\uddef",cont:"Asia",area:55.251,gdp:20.42,lang:"Tajik",pop:10.98,gov:"Republic",colors:["red", "white", "green", "yellow"]},
+  {n:"Tanzania",code:"TZA",flag:"\ud83c\uddf9\ud83c\uddff",cont:"Africa",area:364.9,gdp:94.89,lang:"Swahili",pop:72.6,gov:"Republic",colors:["green", "yellow", "black", "blue"]},
+  {n:"Thailand",code:"THA",flag:"\ud83c\uddf9\ud83c\udded",cont:"Asia",area:198.117,gdp:580.0,lang:"Thai",pop:71.6,gov:"Const. monarchy",colors:["red", "white", "blue"]},
+  {n:"Togo",code:"TGO",flag:"\ud83c\uddf9\ud83c\uddec",cont:"Africa",area:21.925,gdp:13.44,lang:"French",pop:9.9,gov:"Republic",colors:["green", "yellow", "red", "white"]},
+  {n:"Tonga",code:"TON",flag:"\ud83c\uddf9\ud83c\uddf4",cont:"Oceania",area:0.288,gdp:0.72,lang:"English",pop:0.103,gov:"Const. monarchy",colors:["red", "white"]},
+  {n:"Trinidad and Tobago",code:"TTO",flag:"\ud83c\uddf9\ud83c\uddf9",cont:"North America",area:1.981,gdp:26.84,lang:"English",pop:1.5,gov:"Republic",colors:["red", "white", "black"]},
+  {n:"Tunisia",code:"TUN",flag:"\ud83c\uddf9\ud83c\uddf3",cont:"Africa",area:63.17,gdp:60.74,lang:"Arabic",pop:12.4,gov:"Republic",colors:["red", "white"]},
+  {n:"Turkey",code:"TUR",flag:"\ud83c\uddf9\ud83c\uddf7",cont:"Asia",area:302.535,gdp:1640.22,lang:"Turkish",pop:87.9,gov:"Republic",colors:["red", "white"]},
+  {n:"Turkmenistan",code:"TKM",flag:"\ud83c\uddf9\ud83c\uddf2",cont:"Asia",area:188.456,gdp:83.06,lang:"Turkmen",pop:7.7,gov:"Republic",colors:["green", "white", "red"]},
+  {n:"Tuvalu",code:"TUV",flag:"\ud83c\uddf9\ud83c\uddfb",cont:"Oceania",area:0.01,gdp:0.07,lang:"Tuvaluan",pop:0.009,gov:"Const. monarchy",colors:["blue", "yellow", "white", "red"]},
+  {n:"Uganda",code:"UGA",flag:"\ud83c\uddfa\ud83c\uddec",cont:"Africa",area:93.263,gdp:73.37,lang:"English",pop:52.8,gov:"Republic",colors:["black", "yellow", "red", "white"]},
+  {n:"Ukraine",code:"UKR",flag:"\ud83c\uddfa\ud83c\udde6",cont:"Europe",area:233.013,gdp:225.34,lang:"Ukrainian",pop:39.5,gov:"Republic",colors:["blue", "yellow"]},
+  {n:"United Arab Emirates",code:"ARE",flag:"\ud83c\udde6\ud83c\uddea",cont:"Asia",area:32.278,gdp:621.55,lang:"Arabic",pop:11.6,gov:"Const. monarchy",colors:["green", "white", "black", "red"]},
+  {n:"United Kingdom",code:"GBR",flag:"\ud83c\uddec\ud83c\udde7",cont:"Europe",area:93.784,gdp:4264.79,lang:"English",pop:69.9,gov:"Const. monarchy",colors:["blue", "white", "red"]},
+  {n:"United States",code:"USA",flag:"\ud83c\uddfa\ud83c\uddf8",cont:"North America",area:3618.783,gdp:32383.92,lang:"English",pop:349.0,gov:"Republic",colors:["red", "white", "blue"]},
+  {n:"Uruguay",code:"URY",flag:"\ud83c\uddfa\ud83c\uddfe",cont:"South America",area:69.898,gdp:96.09,lang:"Spanish",pop:3.4,gov:"Republic",colors:["blue", "white", "yellow", "brown"]},
+  {n:"Uzbekistan",code:"UZB",flag:"\ud83c\uddfa\ud83c\uddff",cont:"Asia",area:172.742,gdp:181.5,lang:"Uzbek",pop:37.7,gov:"Republic",colors:["blue", "white", "green", "red"]},
+  {n:"Vanuatu",code:"VUT",flag:"\ud83c\uddfb\ud83c\uddfa",cont:"Oceania",area:4.706,gdp:1.4,lang:"Bislama",pop:0.3,gov:"Republic",colors:["black", "red", "green", "yellow"]},
+  {n:"Vatican City",code:"VAT",flag:"\ud83c\uddfb\ud83c\udde6",cont:"Europe",area:0.0002,gdp:0.02,lang:"Italian",pop:0.001,gov:"Absolute monarchy",colors:["yellow", "white", "grey"]},
+  {n:"Venezuela",code:"VEN",flag:"\ud83c\uddfb\ud83c\uddea",cont:"South America",area:353.841,gdp:111.3,lang:"Spanish",pop:28.6,gov:"Republic",colors:["yellow", "blue", "red", "white", "brown"]},
+  {n:"Vietnam",code:"VNM",flag:"\ud83c\uddfb\ud83c\uddf3",cont:"Asia",area:127.882,gdp:527.27,lang:"Vietnamese",pop:102.2,gov:"One-party state",colors:["red", "yellow"]},
+  {n:"Yemen",code:"YEM",flag:"\ud83c\uddfe\ud83c\uddea",cont:"Asia",area:203.85,gdp:7.43,lang:"Arabic",pop:43.0,gov:"Republic",colors:["red", "white", "black"]},
+  {n:"Zambia",code:"ZMB",flag:"\ud83c\uddff\ud83c\uddf2",cont:"Africa",area:290.585,gdp:41.24,lang:"English",pop:22.5,gov:"Republic",colors:["green", "red", "black", "orange"]},
+  {n:"Zimbabwe",code:"ZWE",flag:"\ud83c\uddff\ud83c\uddfc",cont:"Africa",area:150.872,gdp:56.71,lang:"Shona",pop:17.27,gov:"Republic",colors:["green", "yellow", "red", "black", "white"]},
 ];
 const POOL = COUNTRIES.slice();
 
@@ -548,7 +546,9 @@ function fmtAreaDiff(diffThousands){
 function fmtGdpDiff(diffBillions){
   const b = Math.abs(diffBillions);
   if (b >= 1000) return "$"+(b/1000).toFixed(1)+"T";
-  return "$"+Math.round(b)+"B";
+  if (b >= 1) return "$"+Math.round(b)+"B";
+  if (b >= 0.001) return "$"+Math.round(b*1000)+"M";
+  return "<$1M";
 }
 function fmtPopDiff(diffMillions){
   const m = Math.abs(diffMillions);
@@ -581,7 +581,7 @@ function evaluate(g){
     const arrow = dA > 0 ? "↑ bigger" : "↓ smaller";
     const ratio = Math.abs(dA) / Math.max(g.area,0.001);
     sizeCls = ratio <= 0.25 ? "c-amber" : "c-red";
-    sizeVal = fmtAreaDiff(dA)+" mi²";
+    sizeVal = fmtAreaDiff(dA)+" mi² off";
     sizeSub = arrow;
   }
   const size = {val:sizeVal, sub:sizeSub, cls:sizeCls};
@@ -594,7 +594,7 @@ function evaluate(g){
     const arrow = dG > 0 ? "↑ richer" : "↓ poorer";
     const ratio = Math.abs(dG) / Math.max(g.gdp,0.001);
     ecoCls = ratio <= 0.25 ? "c-amber" : "c-red";
-    ecoVal = fmtGdpDiff(dG);
+    ecoVal = fmtGdpDiff(dG)+" off";
     ecoSub = arrow;
   }
   const economy = {val:ecoVal, sub:ecoSub, cls:ecoCls};
@@ -622,7 +622,7 @@ function evaluate(g){
     const arrow = dP > 0 ? "↑ more" : "↓ fewer";
     const ratio = Math.abs(dP) / Math.max(g.pop,0.001);
     popCls = ratio <= 0.25 ? "c-amber" : "c-red";
-    popVal = fmtPopDiff(dP);
+    popVal = fmtPopDiff(dP)+" off";
     popSub = arrow;
   }
   const population = {val:popVal, sub:popSub, cls:popCls};
@@ -648,7 +648,7 @@ function renderGuess(g, ev){
   const card = document.createElement("div");
   card.className = "guess-card";
   card.innerHTML = `
-    <div class="guess-name"><span class="flag">${g.code}</span>${g.n}</div>
+    <div class="guess-name"><span class="flag">${g.flag}</span>${g.n}</div>
     <div class="clues">
       ${clueHTML("Continent", ev.continent)}
       ${clueHTML("Letter", ev.letter)}
@@ -672,7 +672,7 @@ function endGame(won){
     <div class="banner ${won?'win':'lose'}">
       <h2>${won ? "You found it!" : "Out of guesses"}</h2>
       <p>${won ? `Solved in ${guessCount} ${guessCount===1?'guess':'guesses'}.` : "The secret country was"}</p>
-      <div class="answer">${secret.code} ${secret.n}</div>
+      <div class="answer">${secret.flag} ${secret.n}</div>
       <button class="info-toggle" id="infoToggle">ⓘ Show its categories</button>
       <div class="info-panel" id="infoPanel" style="display:none;">
         <div class="info-row"><span>Continent</span><b>${secret.cont}</b></div>
@@ -697,8 +697,10 @@ function endGame(won){
 
 function findCountry(name){
   const q = name.trim().toLowerCase();
-  // exact then loose
+  // exact name, then exact ISO code
   let c = POOL.find(c => c.n.toLowerCase() === q);
+  if (c) return c;
+  c = POOL.find(c => c.code.toLowerCase() === q);
   if (c) return c;
   const aliases = {
     "usa":"United States","us":"United States","america":"United States","united states of america":"United States",
@@ -745,7 +747,7 @@ function showSuggest(){
   const q = document.getElementById("guess").value.trim().toLowerCase();
   const box = document.getElementById("suggest");
   if (!q){ hideSuggest(); return; }
-  currentMatches = POOL.filter(c => c.n.toLowerCase().includes(q)).slice(0,6);
+  currentMatches = POOL.filter(c => c.n.toLowerCase().includes(q) || c.code.toLowerCase().includes(q)).slice(0,6);
   if (!currentMatches.length){ hideSuggest(); return; }
   box.innerHTML = currentMatches.map((c,i) =>
     `<div data-i="${i}"><span class="sg-code">${c.code}</span> ${c.n}</div>`).join("");
