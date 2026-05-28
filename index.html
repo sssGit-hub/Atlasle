@@ -183,7 +183,14 @@
     font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px;
     margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
   }
-  .guess-name .flag { font-size: 22px; line-height: 1; }
+  .guess-name .flag {
+    font-size: 22px; line-height: 1;
+    cursor: pointer;
+    transition: transform .15s;
+    display: inline-block;
+    user-select: none;
+  }
+  .guess-name .flag:hover { transform: scale(1.2); }
   .clues { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
   @media (max-width: 600px) { .clues { grid-template-columns: repeat(2,1fr); } }
   .clue {
@@ -197,6 +204,51 @@
   .c-green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
   .c-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
   .c-red   { background: var(--red-bg);   color: var(--red);   border-color: var(--red); }
+
+  /* Flag zoom overlay */
+  #flag-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(43, 33, 24, 0.55);
+    backdrop-filter: blur(2px);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    animation: fadein .15s ease;
+  }
+  #flag-overlay.show { display: flex; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  #flag-overlay .flag-bubble {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 28px 36px;
+    box-shadow: 6px 6px 0 rgba(43,33,24,0.35);
+    text-align: center;
+    animation: popIn .2s cubic-bezier(.2,.8,.3,1);
+  }
+  @keyframes popIn { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  #flag-overlay .flag-bubble .big-flag {
+    font-size: 96px;
+    line-height: 1.1;
+    display: block;
+  }
+  #flag-overlay .flag-bubble .flag-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin-top: 10px;
+    color: var(--ink);
+  }
+  #flag-overlay .flag-bubble .flag-hint {
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
 
   /* End banner */
   .banner {
@@ -278,6 +330,7 @@
         <div class="row"><span class="nm">Flag</span><span>Percent of the secret flag's colors (including emblems and coats of arms) that also appear on your guess's flag. Guess USA against China → 50% (both have red).</span></div>
       </div>
       <p style="margin-top:12px;font-style:italic;">Tip: the size and economy arrows are your compass — follow them toward bigger/smaller and richer/poorer countries.</p>
+      <p style="margin-top:8px;font-style:italic;">Tip: click any flag emoji on a guess card to see it enlarged.</p>
     </div>
   </details>
 
@@ -301,12 +354,27 @@
   </div>
 </div>
 
+<!-- Flag zoom overlay -->
+<div id="flag-overlay">
+  <div class="flag-bubble">
+    <span class="big-flag" id="overlay-flag"></span>
+    <div class="flag-name" id="overlay-name"></div>
+    <div class="flag-hint">click anywhere to close</div>
+  </div>
+</div>
+
 <script>
-/* ---------- DATA ----------
-   area = thousands of sq miles (we display sq mi)
-   gdp  = nominal GDP in billions USD (approx, for game purposes)
-   colors = set of flag colors (named)
-*/
+/* ---------- FLAG OVERLAY ---------- */
+const overlay = document.getElementById("flag-overlay");
+overlay.addEventListener("click", () => overlay.classList.remove("show"));
+
+function showFlagOverlay(emoji, countryName) {
+  document.getElementById("overlay-flag").textContent = emoji;
+  document.getElementById("overlay-name").textContent = countryName;
+  overlay.classList.add("show");
+}
+
+/* ---------- DATA ---------- */
 const COUNTRIES = [
   {n:"Afghanistan",code:"AFG",flag:"\ud83c\udde6\ud83c\uddeb",cont:"Asia",area:251.827,gdp:19.66,lang:"Persian",pop:45.0,gov:"Theocracy",colors:["white", "black", "red", "green"]},
   {n:"Albania",code:"ALB",flag:"\ud83c\udde6\ud83c\uddf1",cont:"Europe",area:11.1,gdp:33.33,lang:"Albanian",pop:2.8,gov:"Republic",colors:["red", "black"]},
@@ -522,8 +590,6 @@ function newGame(){
   document.getElementById("giveup").style.display = "inline";
   updateTries();
   document.getElementById("guess").focus();
-  // console hint for debugging only:
-  // console.log("secret:", secret.n);
 }
 
 function updateTries(){
@@ -531,7 +597,6 @@ function updateTries(){
     `Guess ${Math.min(guessCount+1,MAX_GUESSES)} of ${MAX_GUESSES}`;
 }
 
-/* ---- formatting helpers ---- */
 function fmtArea(thousands){
   const sqmi = thousands*1000;
   if (sqmi >= 1000) return (sqmi/1000000).toFixed(sqmi>=100000?1:2).replace(/\.0$/,'')+"M";
@@ -557,25 +622,12 @@ function fmtPopDiff(diffMillions){
   return Math.round(m*1000)+"k";
 }
 
-/* ---- core clue evaluation ---- */
 function evaluate(g){
-  // continent
-  const continent = {
-    val: g.cont,
-    cls: g.cont === secret.cont ? "c-green" : "c-red"
-  };
-
-  // starting letter
+  const continent = { val: g.cont, cls: g.cont === secret.cont ? "c-green" : "c-red" };
   const gl = g.n[0].toUpperCase(), sl = secret.n[0].toUpperCase();
-  const letter = {
-    val: gl,
-    cls: gl === sl ? "c-green" : "c-red",
-    sub: gl === sl ? "match" : ""
-  };
-
-  // size
+  const letter = { val: gl, cls: gl === sl ? "c-green" : "c-red", sub: gl === sl ? "match" : "" };
   let sizeCls, sizeVal, sizeSub;
-  const dA = secret.area - g.area; // positive => secret bigger
+  const dA = secret.area - g.area;
   if (Math.abs(dA) < 0.001){ sizeCls="c-green"; sizeVal="exact"; sizeSub=""; }
   else {
     const arrow = dA > 0 ? "↑ bigger" : "↓ smaller";
@@ -585,10 +637,8 @@ function evaluate(g){
     sizeSub = arrow;
   }
   const size = {val:sizeVal, sub:sizeSub, cls:sizeCls};
-
-  // economy / GDP
   let ecoCls, ecoVal, ecoSub;
-  const dG = secret.gdp - g.gdp; // positive => secret richer
+  const dG = secret.gdp - g.gdp;
   if (dG === 0){ ecoCls="c-green"; ecoVal="exact"; ecoSub=""; }
   else {
     const arrow = dG > 0 ? "↑ richer" : "↓ poorer";
@@ -598,14 +648,7 @@ function evaluate(g){
     ecoSub = arrow;
   }
   const economy = {val:ecoVal, sub:ecoSub, cls:ecoCls};
-
-  // language
-  const language = {
-    val: g.lang,
-    cls: g.lang === secret.lang ? "c-green" : "c-red"
-  };
-
-  // flag colors: shared / secret's color count
+  const language = { val: g.lang, cls: g.lang === secret.lang ? "c-green" : "c-red" };
   const shared = secret.colors.filter(c => g.colors.includes(c)).length;
   const pct = Math.round(100 * shared / secret.colors.length);
   let flagCls;
@@ -613,10 +656,8 @@ function evaluate(g){
   else if (pct >= 50) flagCls = "c-amber";
   else flagCls = "c-red";
   const flag = { val: pct+"%", sub: shared+" of "+secret.colors.length, cls: flagCls };
-
-  // population
   let popCls, popVal, popSub;
-  const dP = secret.pop - g.pop; // positive => secret more populous
+  const dP = secret.pop - g.pop;
   if (Math.abs(dP) < 0.001){ popCls="c-green"; popVal="exact"; popSub=""; }
   else {
     const arrow = dP > 0 ? "↑ more" : "↓ fewer";
@@ -626,13 +667,7 @@ function evaluate(g){
     popSub = arrow;
   }
   const population = {val:popVal, sub:popSub, cls:popCls};
-
-  // government type
-  const government = {
-    val: g.gov,
-    cls: g.gov === secret.gov ? "c-green" : "c-red"
-  };
-
+  const government = { val: g.gov, cls: g.gov === secret.gov ? "c-green" : "c-red" };
   return {continent, letter, size, economy, population, government, language, flag};
 }
 
@@ -648,7 +683,9 @@ function renderGuess(g, ev){
   const card = document.createElement("div");
   card.className = "guess-card";
   card.innerHTML = `
-    <div class="guess-name"><span class="flag">${g.flag}</span>${g.n}</div>
+    <div class="guess-name">
+      <span class="flag" title="Click to enlarge flag">${g.flag}</span>${g.n}
+    </div>
     <div class="clues">
       ${clueHTML("Continent", ev.continent)}
       ${clueHTML("Letter", ev.letter)}
@@ -659,8 +696,13 @@ function renderGuess(g, ev){
       ${clueHTML("Language", ev.language)}
       ${clueHTML("Flag", ev.flag)}
     </div>`;
+
+  // Wire up click on the flag emoji
+  card.querySelector(".flag").addEventListener("click", () => {
+    showFlagOverlay(g.flag, g.n);
+  });
+
   document.getElementById("guesses").prepend(card);
-  // Bring the newest guess into view so there's no confusion about which is latest
   requestAnimationFrame(() => {
     card.scrollIntoView({ behavior: "smooth", block: "center" });
   });
@@ -697,7 +739,6 @@ function endGame(won){
     p.style.display = open ? "none" : "block";
     this.textContent = open ? "ⓘ Show its categories" : "ⓘ Hide categories";
   };
-  // On game end, show the result banner rather than the last guess card
   requestAnimationFrame(() => {
     slot.scrollIntoView({ behavior: "smooth", block: "center" });
   });
@@ -705,7 +746,6 @@ function endGame(won){
 
 function findCountry(name){
   const q = name.trim().toLowerCase();
-  // exact name, then exact ISO code
   let c = POOL.find(c => c.n.toLowerCase() === q);
   if (c) return c;
   c = POOL.find(c => c.code.toLowerCase() === q);
@@ -749,7 +789,6 @@ function submitGuess(){
   document.getElementById("guess").focus();
 }
 
-/* ---- autocomplete ---- */
 let activeIdx = -1, currentMatches = [];
 function showSuggest(){
   const q = document.getElementById("guess").value.trim().toLowerCase();
@@ -788,6 +827,11 @@ document.addEventListener("click", e => {
 
 document.getElementById("submit").onclick = submitGuess;
 document.getElementById("giveup").onclick = () => { if(!over) endGame(false); };
+
+// Close overlay on Escape key
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") overlay.classList.remove("show");
+});
 
 newGame();
 </script>
